@@ -52,7 +52,6 @@ maxEcologico(Estafeta,Encomendas):- maxEcologico1(Estafeta,Encomendas).
 
 %---------------------Cria lista de pares Id do Estafeta e Respetiva lista de encomendas-----------
 
-pontuacaoTeste(Result):-  encomendasEstafeta(Pares), pontuacao(Pares,Result).    
 
 
 pontuacao((_,[]), 0).
@@ -63,9 +62,10 @@ pontuacao((_,[(_,_,_,_,_,_,carro,_,_,_)|Y]),R):- pontuacao(Y,R1), R is R1 + 3.
 
 (987,[(1,5,8,"Rua Santo António, nº420","Celeirós","21-11-21",bicicleta,10,"20-11-21",123),(4,6,6,"Rua José Sócrates, nº2","Fraião","01-01-22",carro,15,"31-12-21",12345)])
 
+
+
 %---------------------------QUERY 3 --------------------------------------------
 
-clientesEstafeta(Estafeta,R):- encomendasEstafeta(Pares),clientesEstafetaAux(Estafeta,Pares,R).
 
 clientesEstafetaAux(_,[],Result).
 clientesEstafetaAux(Estafeta,[(Estafeta, List) | Y], Result):- clientesEstafetaAux2(List,Result).
@@ -75,6 +75,7 @@ clientesEstafetaAux(Estafeta,[(X,_) | Y], Result):- clientesEstafetaAux(Estafeta
 clientesEstafetaAux2([],[]).
 clientesEstafetaAux2([(_,_,_,_,_,_,_,_,_,Cliente) | Y],[Cliente|Result]):- clientesEstafetaAux2(Y,Result).
 
+clientesEstafeta(Estafeta,R):- encomendasEstafeta(Pares),clientesEstafetaAux(Estafeta,Pares,R).
 
 
 %------------------------------------------
@@ -108,6 +109,7 @@ listEncomendasAux([(NE,A,B,C,D,E,F,G,H,I) | LE] , [NE | LNE] ):-
 %    encomenda(NE,_,_,_,_,_,V,_,_,_),
 %    listEncomendasAux(LE,LNE).
 
+pontuacaoTeste(Result):-  encomendasEstafeta(Pares), pontuacao(Pares,Result).    
 
 
 %Encomendas -> lista

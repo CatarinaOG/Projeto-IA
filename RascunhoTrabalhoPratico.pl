@@ -7,22 +7,14 @@ veiculo(carro,3).
 %------------------------------------ENTIDADES------------------------------------
 
 %encomenda(Id,Peso,Volume,Classificacao,Rua,Freguesia,Prazo,DataEnt,DataEnc,Veiculo,Preço,idCliente,idEstafeta).
-%preço ->
 
-
-encomenda(1 ,5 , 8 , 4 , "Rua Santo António, nº420","Celeirós", 21/11/21,21/11/21,20/11/21,bicicleta,10, 123,987).
-
-encomenda(2 ,14, 10, 5,  "Praça do Comércio, nº15" , "Silveiros",23/11/21,22/11/21,20/11/21,mota,9,456,654).
-
-encomenda(3 ,90 , 5 , 3 , "Entrocamento de São Geraldes, nº30","Martim",31/12/21,01/01/22,25/12/21,carro,14,789,321).
-
-encomenda(4 ,6 , 6 , 4 ,"Rua José Sócrates, nº2","Fraião",01/01/22, 01/01/22, 31/12/21,carro,15,12345,987).
-
-encomenda(5 , 4 , 13, 4 ,"Rua Monte Carrinhos , nº45","Martim", 28/03/21, 28/03/21 ,27/03/21, mota, 15,123,654).
-
-encomenda(6 , 12, 9 , 3 ,  "Rua Paulo Fernandes , nº48","Santa Eugénia",10/12/19,11/12/19,09/12/19,carro,20,456,321).
-
-encomenda(7 , 3 , 4 , 2 ,"Praça Arsenalistas  , nº410","Cabreiros",15/07/18,18/07/18,03/07/18,bicicleta,50,12345,321).
+encomenda(1 ,5  ,8  ,4 ,"Rua Santo António, nº420","Celeirós"        ,21/11/21 ,21/11/21 ,20/11/21 ,bicicleta ,10 ,123   ,987).
+encomenda(2 ,14 ,10 ,5 ,"Praça do Comércio, nº15" , "Silveiros"      ,23/11/21 ,22/11/21 ,20/11/21 ,mota      ,9  ,456   ,654).
+encomenda(3 ,90 ,5  ,3 ,"Entrocamento de São Geraldes, nº30","Martim",31/12/21 ,01/01/22 ,25/12/21 ,carro     ,14 ,789   ,321).
+encomenda(4 ,6  ,6  ,4 ,"Rua José Sócrates, nº2","Fraião"            ,01/01/22 ,01/01/22 ,31/12/21 ,carro     ,15 ,12345 ,987).
+encomenda(5 ,4  ,13 ,4 ,"Rua Monte Carrinhos , nº45","Martim"        ,28/03/21 ,28/03/21 ,27/03/21 ,mota      ,15 ,123   ,654).
+encomenda(6 ,12 ,9  ,3 ,"Rua Paulo Fernandes , nº48","Santa Eugénia" ,10/12/19 ,11/12/19 ,09/12/19 ,carro     ,20 ,456   ,321).
+encomenda(7 ,3  ,4  ,2 ,"Praça Arsenalistas  , nº410","Cabreiros"    ,15/07/18 ,18/07/18 ,03/07/18 ,bicicleta ,50 ,12345 ,321).
 
 
 %encomenda(8 , 10, 12, "Rua do Souto , nº13").
@@ -34,18 +26,17 @@ encomenda(7 , 3 , 4 , 2 ,"Praça Arsenalistas  , nº410","Cabreiros",15/07/18,18
 
 %cliente(Id,IdsEncomendas).
 %IdsEncomendas -> lista dos ids
-cliente(123,[1,5]).
-cliente(12345,[4,7]).
 
-cliente(456,[2,6]).
-
-cliente(789,[3]).
+cliente(123   ,[1,5]).
+cliente(12345 ,[4,7]).
+cliente(456   ,[2,6]).
+cliente(789   ,[3]).
 
 
 %estafeta(Id, NumEnc,Rank,Encomendas,NumPen).
-estafeta(987,2,5,[1,4],0).
-estafeta(654,2,3,[2,5],3).
-estafeta(321,3,4,[3,6,7],2).
+estafeta(987 ,2 ,5 ,[1,4]   ,0).
+estafeta(654 ,2 ,3 ,[2,5]   ,3).
+estafeta(321 ,3 ,4 ,[3,6,7] ,2).
 
 
 %-------------------------- QUERY 1 --------------------------------------------

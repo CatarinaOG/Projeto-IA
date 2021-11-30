@@ -55,6 +55,42 @@ estafeta(654, 2, [2,5]  , 3).
 estafeta(321, 3, [3,6,7], 2).
 
 
+%---------------tarefa extra-----------------
+
+%encomenda(Id,Peso,Volume,Classificacao,Rua,Freguesia,Veiculo,Preço,idCliente,idEstafeta).
+
+pesoMedioPorVeiculo(Bicicleta/Mota/Carro) :-
+    findall((Peso,Veiculo), encomenda(_,Peso,_,_,_,_,Veiculo,_,_,_), Lista),
+    contaPesos(Lista,(B,OcorrB)/(M,OcorrM)/(C,OcorrC)),
+    Bicicleta is B/OcorrB,
+    Mota is M/OcorrM,
+    Carro is C/OcorrC.
+
+
+
+contaPesos([],(0,0)/(0,0)/(0,0)).
+
+contaPesos([(Peso,bicicleta) | T],(BN,OcorrBN)/X/Y):-
+    contaPesos(T , (B,OcorrB)/X/Y),
+    BN is B + Peso,
+    OcorrBN is OcorrB + 1.
+
+contaPesos([(Peso,carro) | T],X/Y/(CN,OcorrCN)):-
+    contaPesos(T , X/Y/(C,OcorrC)),
+    CN is C + Peso,
+    OcorrCN is OcorrC + 1.
+
+contaPesos([(Peso,mota) | T],X/(MN,OcorrMN)/Y):-
+    contaPesos(T , X/(M,OcorrM)/Y),
+    MN is M + Peso,
+    OcorrMN is OcorrM + 1.
+
+
+
+
+
+
+
 %-------------------------- QUERY 1 --------------------------------------------
 
 

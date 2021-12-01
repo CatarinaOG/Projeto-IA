@@ -45,12 +45,6 @@ dataNE(11, 23/12/21, 23/01/22).
 dataNE(14, 01/10/21, 04/10/22).
 
 
-
-%encomenda(10, 3 , 2 , "Largo Sr. dos Aflitos, nº4")
-%encomenda(11, 14, 3 , "Rua do Raio, nº142").
-%encomenda(12, 2 , 4 , "Rua da Avenida da Liberdade, nº60").
-
-
 %cliente(Id,IdsEncomendas).
 %IdsEncomendas -> lista dos ids
 
@@ -133,7 +127,7 @@ clientesEstafeta(Estafeta,R):- encomendasEstafeta(Pares),
 
 
 %-------------------------- QUERY 4 --------------------------------------------
-%calcular o valor faturado pela Green Distribution num determinado dia;
+
 
 valorDiario(Data,Result):- findall((Preco) , (encomenda(Id,_,_,_,_,_,_,Preco,_,_) , dataE(Id,Data,_,_) ), LE ),
                            findall((Preco) , (encomenda(Id,_,_,_,_,_,_,Preco,_,_) , dataNE(Id,Data,_) ), LNE ),
@@ -145,7 +139,7 @@ valorDiario(Data,Result):- findall((Preco) , (encomenda(Id,_,_,_,_,_,_,Preco,_,_
 
 %-------------------------- QUERY 5 --------------------------------------------
 
-%identificar quais as zonas (e.g., rua ou freguesia) com maior volume deentregas por parte da Green Distribution;
+
 
 maisEntregasFreg(Result):-
                 findall((Freguesia) , encomenda(_,_,_,_,_,Freguesia,_,_,_,_),Freguesias),
@@ -187,7 +181,6 @@ filtrarEstafeta(IdEstafeta, [_| Y], Result):- filtrarEstafeta(IdEstafeta,Y,Resul
 
 
 %-------------------------- QUERY 7 --------------------------------------------
-%identificar o número total de entregas pelos diferentes meios de transporte, num determinado intervalo de tempo;
 
 
 entregasPeriodoTransporte(DataI,DataF, Result):- findall((Transporte), (encomenda(Id,_,_,_,_,_,Transporte,_,_,_), dataE(Id,_,_,DataE), depois(DataE,DataI), antes(DataE,DataF)) ,L),
@@ -210,7 +203,6 @@ antes(D1/M1/A1,DI/MI/AI):- A1<AI , ! ;
 
 
 %-------------------------- QUERY 8 --------------------------------------------
-%identificar o número total de entregas pelos estafetas, num determinado intervalo de tempo;
 
 
 entregasPeriodo(DataI,DataF, Result):- findall((Id), (encomenda(Id,_,_,_,_,_,_,_,_,_), dataE(Id,_,_,DataE), depois(DataE,DataI), antes(DataE,DataF)) ,L),
@@ -218,7 +210,7 @@ entregasPeriodo(DataI,DataF, Result):- findall((Id), (encomenda(Id,_,_,_,_,_,_,_
 
 
 %-------------------------- QUERY 9 --------------------------------------------
-%calcular o número de encomendas entregues e não entregues pela Green Distribution, num determinado período de tempo;
+
 
 encomendasPeriodo(DataI,DataF, E/NE):- findall((Id), (encomenda(Id,_,_,_,_,_,_,_,_,_), dataE(Id,Data,_,_), depois(Data,DataI), antes(Data,DataF)) ,LE),
                                        findall((Id), (encomenda(Id,_,_,_,_,_,_,_,_,_), dataNE(Id,Data,_), depois(Data,DataI), antes(Data,DataF)) ,LNE),
@@ -227,7 +219,7 @@ encomendasPeriodo(DataI,DataF, E/NE):- findall((Id), (encomenda(Id,_,_,_,_,_,_,_
 
 
 %-------------------------- QUERY 10 --------------------------------------------
-%calcular o peso total transportado por estafeta num determinado dia;
+
 
 
 pesoEstafetaDia(Id,Dia,Result) :- findall( (Peso) , (encomenda(IdE,Peso,_,_,_,_,_,_,_,Id) , dataE(IdE,_,_,Dia) ) , L),
@@ -237,8 +229,6 @@ pesoEstafetaDia(Id,Dia,Result) :- findall( (Peso) , (encomenda(IdE,Peso,_,_,_,_,
 
 %---------------tarefa extra-----------------
 
-
-%encomenda(Id,Peso,Volume,Classificacao,Rua,Freguesia,Veiculo,Preço,idCliente,idEstafeta).
 
 pesoMedioPorVeiculo(Bicicleta/Mota/Carro) :-
     findall((Peso,Veiculo), encomenda(_,Peso,_,_,_,_,Veiculo,_,_,_), Lista),

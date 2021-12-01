@@ -1,38 +1,49 @@
+%---------------------------------------------------------------------------------
+%----------------------------------- ENTIDADES -----------------------------------
+%---------------------------------------------------------------------------------
 
-
+%veiculo(TipoDeVeiculo,ClassificaçaoEcologica)
 veiculo(bicicleta,1).
 veiculo(mota,2).
 veiculo(carro,3).
 
-%------------------------------------ENTIDADES------------------------------------
-
-
 %encomenda(Id,Peso,Volume,Classificacao,Rua,Freguesia,Veiculo,Preço,idCliente,idEstafeta).
 
-encomenda(1, 5 , 8 , 4, "Rua Santo António, nº420"          , "Celeirós"     , bicicleta, 10, 123  , 987).
-encomenda(2, 14, 10, 5, "Praça do Comércio, nº15"           ,  "Silveiros"   , mota     , 9 , 456  , 654).
-encomenda(3, 90, 5 , 3, "Entrocamento de São Geraldes, nº30", "Martim"       , carro    , 14, 789  , 321).
-encomenda(4, 6 , 6 , 4, "Rua José Sócrates, nº2"            , "Fraião"       , carro    , 15, 12345, 987).
-encomenda(5, 4 , 13, 4, "Rua Monte Carrinhos , nº45"        , "Martim"       , mota     , 15, 123  , 654).
-encomenda(6, 12, 9 , 3, "Rua Paulo Fernandes , nº48"        , "Santa Eugénia", carro    , 20, 456  , 321).
-encomenda(7, 3 , 4 , 2, "Praça Arsenalistas  , nº410"       , "Cabreiros"    , bicicleta, 50, 12345, 321).
-encomenda(8, 10, 12, 4, "Rua do Souto , nº13"               , "Sao Vitor"    , mota     , 23, 12345, 654).
-encomenda(9, 9 , 3 , 2, "Rua Santa Margarida ,nº60"         , "Vermil"       , carro    , 2 , 123  , 654).
+encomenda(1 , 5 , 8 , 4, "Rua Santo António, nº420"          , "Celeirós"        , bicicleta , 10 , 123  , 987).
+encomenda(2 , 14, 10, 5, "Praça do Comércio, nº15"           ,  "Silveiros"      , mota      , 9  , 456  , 654).
+encomenda(3 , 90, 5 , 3, "Entrocamento de São Geraldes, nº30", "Martim"          , carro     , 14 , 789  , 321).
+encomenda(4 , 6 , 6 , 4, "Rua José Sócrates, nº2"            , "Fraião"          , carro     , 15 , 12345, 987).
+encomenda(5 , 4 , 13, 4, "Rua Monte Carrinhos , nº45"        , "Martim"          , mota      , 15 , 123  , 654).
+encomenda(6 , 12, 9 , 3, "Rua Paulo Fernandes , nº48"        , "Santa Eugénia"   , carro     , 20 , 456  , 321).
+encomenda(7 , 3 , 4 , 2, "Praça Arsenalistas  , nº410"       , "Cabreiros"       , bicicleta , 50 , 12345, 321).
+encomenda(8 , 10, 12, 4, "Rua do Souto , nº13"               , "Sao Vitor"       , mota      , 23 , 12345, 654).
+encomenda(9 , 9 , 3 , 2, "Rua Santa Margarida ,nº60"         , "Vermil"          , carro     , 2  , 123  , 654).
+encomenda(10, 25, 13, 5, "Rua do Carmo, nº 5"                , "Real"            , carro     , 50 , 290  , 321).
+encomenda(11, 12, 2 , 4, "Rua Santa Ingrácia, nº17"          , "Merelim São Paio", mota      , 25 , 105  , 649).
+encomenda(12, 16, 10, 1, "Rua da Padaria, nº 12"             , "Paredes"         , mota      , 69 , 69420, 720).
+encomenda(13, 7 , 6 , 3, "Rua dos Pássaros, nº 120"          , "Prado"           , bicicleta , 120, 290  , 720).
+encomenda(14, 23, 26, 4, "Rua das Palhas, nº 612"            , "São João"        , mota      , 250, 789  , 649).
 
 %dataE(IdEnc ,DataEnc, Prazo, DataEnt).
 
-dataE(1, 20/11/21, 21/11/21, 21/11/21 ).
-dataE(2, 20/11/21, 23/11/21, 22/11/21 ).
-dataE(3, 25/12/21, 31/12/21, 01/01/22 ).
-dataE(4, 31/12/21, 01/01/22, 01/01/22 ).
-dataE(5, 27/03/21, 28/03/21, 28/03/21 ).
-dataE(6, 09/12/19, 10/12/19, 11/12/19 ).
-dataE(7, 03/07/18, 15/07/18, 18/07/18 ).
+dataE(1,  20/11/21, 21/11/21, 21/11/21 ).
+dataE(2,  20/11/21, 23/11/21, 22/11/21 ).
+dataE(3,  25/12/21, 31/12/21, 01/01/22 ).
+dataE(4,  31/12/21, 21/11/21, 21/11/21 ).
+dataE(5,  27/03/21, 28/03/21, 28/03/21 ).
+dataE(6,  09/12/19, 10/12/19, 11/12/19 ).
+dataE(7,  03/07/18, 15/07/18, 18/07/18 ).
+dataE(12, 02/10/20, 14/11/20, 12/11/20 ).
+dataE(13, 08/09/20, 12/11/20, 14/11/20 ).
 
 %dataNE(IdEnc, DataEnc, Prazo).
 
-dataNE(8, 20/11/21, 21/11/21).
-dataNE(9, 20/11/21, 23/11/21).
+dataNE(8,  20/11/21, 21/11/21).
+dataNE(9,  20/11/21, 23/11/21).
+dataNE(10, 28/11/21, 12/01/22).
+dataNE(11, 23/12/21, 23/01/22).
+dataNE(14, 01/10/21, 04/10/22).
+
 
 
 %encomenda(10, 3 , 2 , "Largo Sr. dos Aflitos, nº4")
@@ -43,19 +54,25 @@ dataNE(9, 20/11/21, 23/11/21).
 %cliente(Id,IdsEncomendas).
 %IdsEncomendas -> lista dos ids
 
-cliente(123  , [1,5]).
-cliente(12345, [4,7]).
+cliente(123  , [1,5,9]).
+cliente(12345, [4,7,8]).
 cliente(456  , [2,6]).
-cliente(789  , [3]).
+cliente(789  , [3,14]).
+cliente(105  , [11]).
+cliente(69420, [12]).
+cliente(290  , [10,13]).
 
 
 %estafeta(Id, NumEnc,Encomendas,NumPen).
-estafeta(987, 2, [1,4]  , 0).
-estafeta(654, 2, [2,5]  , 3).
-estafeta(321, 3, [3,6,7], 2).
+estafeta(987, 2, [1,4]     , 0).
+estafeta(654, 4, [2,5,8,9] , 0).
+estafeta(321, 4, [3,6,7,10], 3).
+estafeta(649, 2, [11,14]   , 0).
+estafeta(720, 2, [12,13]   , 1).
 
 
 %---------------tarefa extra-----------------
+
 
 %encomenda(Id,Peso,Volume,Classificacao,Rua,Freguesia,Veiculo,Preço,idCliente,idEstafeta).
 
@@ -123,10 +140,10 @@ pontuacao((_,[(_,_,_,_,_,_,carro,_,_,_)|Y]),R):- pontuacao((_,Y),R1), R is R1 + 
 
 
 estafetasCliente(_,[],[]).
-estafetasCliente(Cliente,[X|T],[E|Result]):-
+estafetasCliente(Cliente,[X|T],[ (X,E) | Result]):-
                         estafetasClienteAux(Cliente,X,E),
-                        estafetasCliente(Cliente,T,Result),
-                        \+member(E,Result).
+                        estafetasCliente(Cliente,T,Result).
+                        %\+member(E,Result).
 
 
 
@@ -274,6 +291,6 @@ listEncomendas([ (Est , LE) | T] , [ (Est , LNE) | L]):-
 
 %---constroi a lista de encomendas ---
 listEncomendasAux([],[]).
-listEncomendasAux([(NE,A,B,C,D,E,F,G,H,I,J,K) | LE] , [NE | LNE] ):-
-    encomenda(NE,A,B,C,D,E,F,G,H,I,J,K),
+listEncomendasAux([(NE,A,B,C,D,E,F,G,H,I) | LE] , [NE | LNE] ):-
+    encomenda(NE,A,B,C,D,E,F,G,H,I),
     listEncomendasAux(LE,LNE).

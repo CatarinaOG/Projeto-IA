@@ -9,6 +9,35 @@ veiculo(mota,2).
 veiculo(carro,3).
 
 
+%veiculoDecrescimo(TipoDeVeiculo,Decrescimo)
+
+veiculoDecrescimo(bicicleta,0.7).
+veiculoDecrescimo(mota,0.5).
+veiculoDecrescimo(carro,0.1).
+
+
+%grafo_______(grafo([vertices],[arestas]))
+
+%grafoCeleiros(grafo([avenida_de_sao_laurenço, rua_monte_carrinhos ,avenida_trezeste ,rua_do_outeiro ,avenida_do_covedêlo],
+%                     [aresta(avenida_trezeste,avenida_de_sao_laurenço,0.9),
+%                      aresta(avenida_trezeste,rua_do_outeiro,1.7),
+%                      aresta(avenida_trezeste,avenida_do_covedêlo,1.7),
+%                      aresta(rua_do_outeiro,avenida_do_covedêlo,0.3),
+%                      aresta(rua_do_outeiro,rua_monte_carrinhos,0.9),
+%                      aresta(avenida_de_sao_laurenço,rua_monte_carrinhos,1.2),
+%                      aresta(avenida_de_sao_laurenço,rua_do_outeiro,0.7),
+%                      aresta(rua_monte_carrinhos,avenida_do_covedêlo,0.8)])).
+
+
+grafoCeleiros(grafo([armazem,avenida_de_sao_laurenço, rua_monte_carrinhos ,avenida_trezeste ,rua_do_outeiro ,avenida_do_covedêlo],
+                     [aresta(armazem,avenida_de_sao_laurenço,0.3),
+                      aresta(armazem,rua_monte_carrinhos,0.95),
+                      aresta(armazem,avenida_trezeste,1.2),
+                      aresta(armazem,rua_do_outeiro,0.5),
+                      aresta(armazem,avenida_do_covedêlo,0.45)])).
+
+
+
 %encomenda(Id,Peso,Volume,Classificacao,Rua,Freguesia,Veiculo,Preço,idCliente,idEstafeta).
 
 encomenda(1 , 5 , 8 , 4, "Avenida de São Laurenço"      , "Celeirós"        , bicicleta , 10 , 123  , 987).

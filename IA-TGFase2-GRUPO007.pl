@@ -9,6 +9,11 @@ veiculo(mota,2).
 veiculo(carro,3).
 
 
+%velocidadeMedia(TipoDeVeiculo,VelocidadeMedia)
+velocidadeMedia(bicicleta,10).
+velocidadeMedia(mota,35).
+velocidadeMedia(carro,25).
+
 %veiculoDecrescimo(TipoDeVeiculo,Decrescimo)
 
 veiculoDecrescimo(bicicleta,0.7).
@@ -16,44 +21,74 @@ veiculoDecrescimo(mota,0.5).
 veiculoDecrescimo(carro,0.1).
 
 
+%estado Inicial e Final
+
+inicial(armazem).
+
+
+%Coordenadas(rua,latitude,longitude)
+coord(armazem                 , 41.520857 , -8.444599).
+coord(avenida_de_sao_lourenco , 41.510072 , -8.452233).
+coord(rua_monte_carrinhos     , 41.518838 , -8.449136).
+coord(avenida_trezeste        , 41.503440 , -8.456939).
+coord(rua_do_outeiro          , 41.514425 , -8.452256).
+coord(avenida_do_covedelo     , 41.514742 , -8.455489).
+
+
+%Calcular as distancias previstas
+grausParaRads(G,R) :- R is G / (180/pi).
+
+distancia(A,B,D) :- coord(A,LatA,LongA),
+                    coord(B,LatB,LongB),
+                    grausParaRads(LatA , RLatA) ,
+                    grausParaRads(LongA, RLongA),
+                    grausParaRads(LatB , RLatB) ,
+                    grausParaRads(LongB, RLongB),
+                    D is (1.609344 * (3963.0 * acos((sin(RLatA) * sin(RLatB)) + cos(RLatA) * cos(RLatB) * cos(RLongB - RLongA)))).
+                    
+
 %grafo_______(grafo([vertices],[arestas]))
+%aresta(origem,destino,distancia)
 
-%grafoCeleiros(grafo([avenida_de_sao_laurenço, rua_monte_carrinhos ,avenida_trezeste ,rua_do_outeiro ,avenida_do_covedêlo],
-%                     [aresta(avenida_trezeste,avenida_de_sao_laurenço,0.9),
-%                      aresta(avenida_trezeste,rua_do_outeiro,1.7),
-%                      aresta(avenida_trezeste,avenida_do_covedêlo,1.7),
-%                      aresta(rua_do_outeiro,avenida_do_covedêlo,0.3),
-%                      aresta(rua_do_outeiro,rua_monte_carrinhos,0.9),
-%                      aresta(avenida_de_sao_laurenço,rua_monte_carrinhos,1.2),
-%                      aresta(avenida_de_sao_laurenço,rua_do_outeiro,0.7),
-%                      aresta(rua_monte_carrinhos,avenida_do_covedêlo,0.8)])).
+grafoCeleiros(grafo([armazem,avenida_de_sao_lourenco, rua_monte_carrinhos ,avenida_trezeste ,rua_do_outeiro ,41.514819, -8.455583],
+                     [aresta(armazem                 , avenida_do_covedelo     ,1.4),
+                      aresta(avenida_trezeste        , avenida_de_sao_lourenco ,0.9),
+                      aresta(avenida_trezeste        , rua_do_outeiro          ,1.7),
+                      aresta(avenida_trezeste        , avenida_do_covedelo     ,1.7),
+                      aresta(rua_do_outeiro          , avenida_do_covedelo     ,0.3),
+                      aresta(rua_do_outeiro          , rua_monte_carrinhos     ,0.9),
+                      aresta(avenida_de_sao_lourenco , rua_monte_carrinhos     ,1.2),
+                      aresta(avenida_de_sao_lourenco , rua_do_outeiro          ,0.7),
+                      aresta(rua_monte_carrinhos     , avenida_do_covedelo     ,0.8)])).
 
 
-grafoCeleiros(grafo([armazem,avenida_de_sao_laurenço, rua_monte_carrinhos ,avenida_trezeste ,rua_do_outeiro ,avenida_do_covedêlo],
-                     [aresta(armazem,avenida_de_sao_laurenço,0.3),
-                      aresta(armazem,rua_monte_carrinhos,0.95),
-                      aresta(armazem,avenida_trezeste,1.2),
-                      aresta(armazem,rua_do_outeiro,0.5),
-                      aresta(armazem,avenida_do_covedêlo,0.45)])).
 
+
+adjacente(X,Y,D, grafo(_,Es)) :- member(aresta(X,Y,D),Es).
+adjacente(X,Y,D, grafo(_,Es)) :- member(aresta(Y,X,D),Es).
 
 
 %encomenda(Id,Peso,Volume,Classificacao,Rua,Freguesia,Veiculo,Preço,idCliente,idEstafeta).
 
-encomenda(1 , 5 , 8 , 4, "Avenida de São Laurenço"      , "Celeirós"        , bicicleta , 10 , 123  , 987).
-encomenda(2 , 14, 10, 5, "Rua Monte Carrinhos"          , "Celeirós"        , mota      , 9  , 456  , 654).
-encomenda(3 , 90, 5 , 3, "Rua dos pomares"              , "Martim"          , carro     , 14 , 789  , 321).
-encomenda(4 , 6 , 6 , 4, "Avenida Trezeste"             , "Celeirós"        , carro     , 15 , 12345, 987).
-encomenda(5 , 4 , 13, 4, "Rua Monte Carrinhos"          , "Martim"          , mota      , 15 , 123  , 654).
-encomenda(6 , 12, 9 , 3, "Rua Paulo Fernandes"          , "Santa Eugénia"   , carro     , 20 , 456  , 321).
-encomenda(7 , 3 , 4 , 2, "Praça Arsenalistas"           , "Cabreiros"       , bicicleta , 50 , 12345, 321).
-encomenda(8 , 10, 12, 4, "Rua do Souto"                 , "Sao Vitor"       , mota      , 23 , 12345, 654).
-encomenda(9 , 9 , 3 , 2, "Rua do Outeiro"               , "Celeirós"        , carro     , 2  , 123  , 654).
-encomenda(10, 25, 13, 5, "Rua do Carmo"                 , "Real"            , carro     , 50 , 290  , 321).
-encomenda(11, 12, 2 , 4, "Rua Santa Ingrácia"           , "Merelim São Paio", mota      , 25 , 105  , 649).
-encomenda(12, 16, 10, 1, "Avenida do Covedêlo"          , "Celeirós"        , mota      , 69 , 69420, 720).
-encomenda(13, 7 , 6 , 3, "Rua dos Pássaros"             , "Prado"           , bicicleta , 120, 290  , 720).
-encomenda(14, 23, 26, 4, "Rua das Palhas"               , "São João"        , mota      , 250, 789  , 649).
+encomenda(1 , 5 , 8 , 4, avenida_de_sao_lourenco      , "Celeirós"        , bicicleta , 10 , 123   , 987).
+encomenda(2 , 14, 10, 5, rua_monte_carrinhos          , "Celeirós"        , mota      , 9  , 456   , 654).
+encomenda(3 , 90, 5 , 3, rua_dos_pomares              , "Martim"          , carro     , 14 , 789   , 321).
+encomenda(4 , 6 , 6 , 4, avenida_trezeste             , "Celeirós"        , carro     , 15 , 12345 , 987).
+encomenda(5 , 4 , 13, 4, rua_monte_carrinhos          , "Martim"          , mota      , 15 , 123   , 654).
+encomenda(6 , 12, 9 , 3, rua_paulo_fernandes          , "Santa Eugénia"   , carro     , 20 , 456   , 321).
+encomenda(7 , 3 , 4 , 2, praca_arsenalistas           , "Cabreiros"       , bicicleta , 50 , 12345 , 321).
+encomenda(12, 16, 10, 1, avenida_do_covedelo          , "Celeirós"        , mota      , 69 , 69420 , 720).
+encomenda(13, 7 , 6 , 3, rua_dos_passaros             , "Prado"           , bicicleta , 120, 290   , 720).
+
+
+%encomendaNE(Id,Peso,Volume,Classificacao,Rua,Freguesia,Preço,idCliente,idEstafeta).
+
+encomendaNE(8 , 10, 12, 4, rua_do_souto                 , "Sao Vitor"       , 23 , 12345 , 654).
+encomendaNE(9 , 9 , 3 , 2, rua_do_outeiro               , "Celeirós"        , 2  , 123   , 654).
+encomendaNE(10, 25, 13, 5, rua_do_carmo                 , "Real"            , 50 , 290   , 321).
+encomendaNE(11, 12, 2 , 4, rua_santa_ingracia           , "Merelim São Paio", 25 , 105   , 649).
+encomendaNE(14, 23, 26, 4, rua_das_palhas               , "São João"        , 250, 789   , 649).
+
 
 %dataE(IdEnc ,DataEnc, Prazo, DataEnt).
 
@@ -97,218 +132,44 @@ estafeta(720, 2, [12,13]   , 1).
 
 
 
-%-------------------------- QUERY 1 --------------------------------------------
+%---------------------------------------------- Depth-First (Distancia) -----------------------------------------------
 
 
-%-> calcular pontuação ecologica para cada estafeta
-%-> dizer qual é a minima e devovler esse estafeta
+%purple burglar alarm
 
 
-maxEcologico(Result) :- encomendasEstafeta(Pares),maxEcologicoAux(Pares,Result).
+dfDistancia(Grafo,Dest,Solucao,C):-
+	inicial(NodoInicial),
+	dfDistancia(Grafo,Dest,NodoInicial,[NodoInicial],Solucao,C).
 
+dfDistancia(Grafo, Dest, Dest, Historico, [], 0):- !.
 
-maxEcologicoAux([(Estafeta,_)],Estafeta):-!.
-maxEcologicoAux([E1,E2|T],Result):- media(E1,P1),
-                                    media(E2,P2),
-                                    P1 =< P2 ,
-                                    !,
-                                    maxEcologicoAux([E1|T],Result).
-maxEcologicoAux([_|T],Result):- maxEcologicoAux(T,Result).
+dfDistancia(Grafo, Dest, NodoAtual, Historico, [Novo|Solucao], C):-
+	adjacente(NodoAtual, Novo, C1, Grafo),
+	\+ member(Novo, Historico),
+	dfDistancia(Grafo, Dest, Novo, [NodoAtual|Historico], Solucao, C2),
+    C is C1 + C2.
 
 
-media((_,Lista),R):- pontuacao((_,Lista),X), length(Lista,Length) , R is X/Length.
+%---------------------------------------------- Depth-First (Tempo) -----------------------------------------------
 
 
-pontuacao((_,[]), 0).
-pontuacao((_,[(_,_,_,_,_,_,bicicleta,_,_,_)|Y]),R) :- pontuacao((_,Y),R1), R is R1 + 1.
-pontuacao((_,[(_,_,_,_,_,_,mota,_,_,_) |Y]),R) :- pontuacao((_,Y),R1), R is R1 + 2.
-pontuacao((_,[(_,_,_,_,_,_,carro,_,_,_)|Y]),R):- pontuacao((_,Y),R1), R is R1 + 3.
+dfTempo(Grafo, Id, Dest, Veiculo, Solucao, CTempo, CDistancia):-
+	inicial(NodoInicial),
+	dfDistancia(Grafo, Dest,NodoInicial,[NodoInicial],Solucao,CDistancia),
+    encomendaNE(Id,Peso,_,_,_,_,_,_,_),
+    custoFinalDec(Veiculo, Peso, CDistancia, CTempo).
 
 
-%-------------------------- QUERY 2 --------------------------------------------
 
-
-estafetasCliente(_,[],[]).
-estafetasCliente(Cliente,[X|T],[ (X,E) | Result]):-
-                        estafetasClienteAux(Cliente,X,E),
-                        estafetasCliente(Cliente,T,Result).
-                        %\+member(E,Result).
-
-
-
-estafetasClienteAux(Cliente,X,E):-encomenda(X,_,_,_,_,_,_,_,Cliente,E).
-
-
-
-
-%-------------------------- QUERY 3 --------------------------------------------
-
-
-clientesEstafetaAux(_,[],Result).
-clientesEstafetaAux(Estafeta,[(Estafeta, List) | Y], Result):- clientesEstafetaAux2(List,Result).
-clientesEstafetaAux(Estafeta,[(X,_) | Y], Result):- clientesEstafetaAux(Estafeta,Y,Result).
-
-
-clientesEstafetaAux2([],[]).
-clientesEstafetaAux2([(_,_,_,_,_,_,_,_,Cliente,_) | Y],[Cliente|Result]):- clientesEstafetaAux2(Y,Result).
-
-clientesEstafeta(Estafeta,R):- encomendasEstafeta(Pares),
-                               clientesEstafetaAux(Estafeta,Pares,R).
-
-
-
-%-------------------------- QUERY 4 --------------------------------------------
-
-
-valorDiario(Data,Result):- findall((Preco) , (encomenda(Id,_,_,_,_,_,_,Preco,_,_) , dataE(Id,Data,_,_) ), LE ),
-                           findall((Preco) , (encomenda(Id,_,_,_,_,_,_,Preco,_,_) , dataNE(Id,Data,_) ), LNE ),
-                           append(LE,LNE,L),
-                           sum_list(L,Result).
-
-
-
-
-%-------------------------- QUERY 5 --------------------------------------------
-
-
-
-maisEntregasFreg(Result):-
-                findall((Freguesia) , encomenda(_,_,_,_,_,Freguesia,_,_,_,_),Freguesias),
-                difsList2(Freguesias,List),
-                maisEntregasAux(List,Pares),
-                maiorEntregas(Pares,Result).
-
-
-difsList2([],[]):-!.
-difsList2([X|T],[X|Result]):- difsList2(T,Result),\+member(X,Result),!.
-difsList2([X|T],Result):-  difsList2(T,Result).
-
-maisEntregasAux([],[]).
-maisEntregasAux([Freguesia|T] , [(Freguesia,Reps)|Result]) :-findall((Freguesia) , encomenda(_,_,_,_,_,Freguesia,_,_,_,_), ListaX),
-                                             length(ListaX,Reps),
-                                             maisEntregasAux(T,Result).
-
-maiorEntregas([(F,_)],F):-!.
-maiorEntregas([(F1,Num),(F2,Num2)|T],Result):- Num>=Num2,!, maiorEntregas([(F1,Num)|T],Result).
-maiorEntregas([_|T],Result):- maiorEntregas(T,Result).
-
-
-
-%-------------------------- QUERY 6 --------------------------------------------
-
-classMedia(IdEstafeta , Result):- encomendasEstafeta(ListEncomendas),
-                                    filtrarEstafeta(IdEstafeta, ListEncomendas, Encomendas),
-                                    mediaC(Encomendas,0,0, Result).
-
-
-
-
-mediaC([], Acc, Sum, Res):- Res is Sum/Acc.
-mediaC([(_,_,_,Class,_,_,_,_,_,_)|Y],Acc,Sum,Res):-  Acc2 is Acc+1, Sum2 is Sum+Class,mediaC(Y,Acc2,Sum2,Res).
-
-
-filtrarEstafeta(IdEstafeta, [(IdEstafeta,X)|Y] , X).
-filtrarEstafeta(IdEstafeta, [_| Y], Result):- filtrarEstafeta(IdEstafeta,Y,Result).
-
-
-%-------------------------- QUERY 7 --------------------------------------------
-
-
-entregasPeriodoTransporte(DataI,DataF, Result):- findall((Transporte), (encomenda(Id,_,_,_,_,_,Transporte,_,_,_), dataE(Id,_,_,DataE), depois(DataE,DataI), antes(DataE,DataF)) ,L),
-                                        contaTransporte(L,Result).
-
-contaTransporte([], 0/0/0).
-contaTransporte([bicicleta|T],AccB/AccM/AccC):- contaTransporte(T,Acc1/AccM/AccC), AccB is Acc1+1.
-contaTransporte([mota|T],AccB/AccM/AccC):- contaTransporte(T,AccB/Acc2/AccC), AccM is Acc2+1.
-contaTransporte([carro|T],AccB/AccM/AccC):- contaTransporte(T,AccB/AccM/Acc3), AccC is Acc3+1.
-
-
-
-depois(D1/M1/A1,DI/MI/AI):- A1>AI ,! ;
-                            A1=:=AI ,  M1>MI, !;
-                            A1=:=AI ,  M1=:=MI , D1>=DI.
-
-antes(D1/M1/A1,DI/MI/AI):- A1<AI , ! ;
-                            A1=:=AI ,  M1<MI, !;
-                            A1=:=AI ,  M1=:=MI , D1<DI.
-
-
-%-------------------------- QUERY 8 --------------------------------------------
-
-
-entregasPeriodo(DataI,DataF, Result):- findall((Id), (encomenda(Id,_,_,_,_,_,_,_,_,_), dataE(Id,_,_,DataE), depois(DataE,DataI), antes(DataE,DataF)) ,L),
-                                       length(L,Result).
-
-
-%-------------------------- QUERY 9 --------------------------------------------
-
-
-encomendasPeriodo(DataI,DataF, E/NE):- findall((Id), (encomenda(Id,_,_,_,_,_,_,_,_,_), dataE(Id,Data,_,_), depois(Data,DataI), antes(Data,DataF)) ,LE),
-                                       findall((Id), (encomenda(Id,_,_,_,_,_,_,_,_,_), dataNE(Id,Data,_), depois(Data,DataI), antes(Data,DataF)) ,LNE),
-                                       length(LE,E),
-                                       length(LNE,NE).
-
-
-%-------------------------- QUERY 10 --------------------------------------------
-
-
-
-pesoEstafetaDia(Id,Dia,Result) :- findall( (Peso) , (encomenda(IdE,Peso,_,_,_,_,_,_,_,Id) , dataE(IdE,_,_,Dia) ) , L),
-                                  sum_list(L,Result).
-
-
-
-%---------------tarefa extra-----------------
-
-
-pesoMedioPorVeiculo(Bicicleta/Mota/Carro) :-
-    findall((Peso,Veiculo), encomenda(_,Peso,_,_,_,_,Veiculo,_,_,_), Lista),
-    contaPesos(Lista,(B,OcorrB)/(M,OcorrM)/(C,OcorrC)),
-    Bicicleta is B/OcorrB,
-    Mota is M/OcorrM,
-    Carro is C/OcorrC.
-
-
-
-contaPesos([],(0,0)/(0,0)/(0,0)).
-
-contaPesos([(Peso,bicicleta) | T],(BN,OcorrBN)/X/Y):-
-    contaPesos(T , (B,OcorrB)/X/Y),
-    BN is B + Peso,
-    OcorrBN is OcorrB + 1.
-
-contaPesos([(Peso,carro) | T],X/Y/(CN,OcorrCN)):-
-    contaPesos(T , X/Y/(C,OcorrC)),
-    CN is C + Peso,
-    OcorrCN is OcorrC + 1.
-
-contaPesos([(Peso,mota) | T],X/(MN,OcorrMN)/Y):-
-    contaPesos(T , X/(M,OcorrM)/Y),
-    MN is M + Peso,
-    OcorrMN is OcorrM + 1.
-
-
-
-%------------------------------------------
-%------------MÉTODOS AUXILIARES------------
-%------------------------------------------
-
-
-
-%---------cria a lista de pares (Estafeta,[Encomendas])------------
-encomendasEstafeta(ListEncomendas):-
-    findall((Estafeta, ListaNumEncomendas) , estafeta(Estafeta, _, ListaNumEncomendas, _) ,L),
-    listEncomendas(ListEncomendas,L).
-
-
-%--- substitui a lista de numeros de encomenda pela lista de encomendas
-listEncomendas([],[]).
-listEncomendas([ (Est , LE) | T] , [ (Est , LNE) | L]):-
-    listEncomendasAux(LE,LNE),
-    listEncomendas(T,L).
-
-%---constroi a lista de encomendas ---
-listEncomendasAux([],[]).
-listEncomendasAux([(NE,A,B,C,D,E,F,G,H,I) | LE] , [NE | LNE] ):-
-    encomenda(NE,A,B,C,D,E,F,G,H,I),
-    listEncomendasAux(LE,LNE).
+custoFinalDec(bicicleta, Peso, CustoDist, CustoTempo) :-
+    velocidadeMedia(bicicleta,X),
+    CustoTempo is CustoDist/(X-(0.7*Peso)).
+    
+custoFinalDec(bicicleta, Peso, CustoDist, CustoTempo) :-
+    velocidadeMedia(mota,X),
+    CustoTempo is CustoDist/(X-(0.5*Peso)).
+    
+custoFinalDec(carro, Peso, CustoDist, CustoTempo) :-
+    velocidadeMedia(carro,X),
+    CustoTempo is CustoDist/(X-(0.1*Peso)).

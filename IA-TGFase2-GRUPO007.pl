@@ -1,3 +1,6 @@
+:- set_prolog_flag( singleton,off ).
+
+
 %---------------------------------------------------------------------------------
 %----------------------------------- ENTIDADES -----------------------------------
 %---------------------------------------------------------------------------------
@@ -50,7 +53,7 @@ distancia(A,B,D) :- coord(A,LatA,LongA),
 %grafo_______(grafo([vertices],[arestas]))
 %aresta(origem,destino,distancia)
 
-grafoCeleiros(grafo([armazem,avenida_de_sao_lourenco, rua_monte_carrinhos ,avenida_trezeste ,rua_do_outeiro ,41.514819, -8.455583],
+grafoCeleiros(grafo([armazem,avenida_de_sao_lourenco, rua_monte_carrinhos ,avenida_trezeste ,rua_do_outeiro],
                      [aresta(armazem                 , avenida_do_covedelo     ,1.4),
                       aresta(avenida_trezeste        , avenida_de_sao_lourenco ,0.9),
                       aresta(avenida_trezeste        , rua_do_outeiro          ,1.7),
@@ -168,7 +171,7 @@ custoFinalDec(bicicleta, Peso, CustoDist, CustoTempo) :-
     velocidadeMedia(bicicleta,X),
     CustoTempo is CustoDist/(X-(0.7*Peso)).
     
-custoFinalDec(bicicleta, Peso, CustoDist, CustoTempo) :-
+custoFinalDec(mota, Peso, CustoDist, CustoTempo) :-
     velocidadeMedia(mota,X),
     CustoTempo is CustoDist/(X-(0.5*Peso)).
     
@@ -215,8 +218,58 @@ bfTempo2(Grafo,Dest,[EstadosA|Outros],Solucao):-
         bfTempo2(Grafo,Dest,Todos,Solucao).
 
 
+%------------------------------------ greedy distancia ---------------------------------------------------
+
+resolve_greedy(NodoInicial, NodoFinal, Grafo, Caminho/Custo):- distancia(NodoInicial, NodoFinal, Estima),
+                                                        greedy([[NodoInicial]/0/Estima], NodoFinal, Grafo, ICaminho/Custo/SolEst),
+                                                        inverso(ICaminho, Caminho).
+
+
+greedy(Caminhos, NodoFinal, Grafo, [NodoFinal|Cam]/Custo/Est) :- melhorEst(Caminhos, [NodoFinal|Cam]/Custo/Est),!.
+
+                                    
+greedy(Caminhos, NodoFinal, Grafo, Caminho) :- melhorEst(Caminhos, MelhorCaminho),
+                             seleciona_caminho(MelhorCaminho, Caminhos, OutrosCaminhos),
+                             expande_gulosa(MelhorCaminho, NodoFinal, Grafo, ExpandeCaminhos),
+                             append(OutrosCaminhos, ExpandeCaminhos, NovosCaminhos),
+                             greedy(NovosCaminhos, NodoFinal, Grafo, Caminho).
+                             
+
+
+melhorEst([E/Custo/Est], E/Custo/Est).
+melhorEst([E1/Custo1/Est1, E2/Custo2/Est2 | Outros],BestE/Custo/BestEst):-
+    Est1 >= Est2,
+    melhorEst([E2/Custo2/Est2 | Outros],BestE/Custo/BestEst).
+
+melhorEst([E1/Custo1/Est1, E2/Custo2/Est2 | Outros],BestE/Custo/BestEst):-
+    Est1 =< Est2,
+    melhorEst([E1/Custo1/Est1 | Outros], BestE/Custo/BestEst).
 
 
 
 
+obtem_melhor_g([Caminho], Caminho) :- !.
+obtem_melhor_g([Caminho1/Custo1/Est1, Caminho2/Custo2/Est2 | Caminhos], MelhorCaminho) :- 
+										Est1 =< Est2, 
+										!, 
+										obtem_melhor_g([Caminho1/Custo1/Est1 | Caminhos], MelhorCaminho).
+obtem_melhor_g([_|Caminhos],MelhorCaminho) :- obtem_melhor_g(Caminhos,MelhorCaminho).
+
+seleciona_caminho(E, [E|XS], XS).
+seleciona_caminho(E, [X|XS], [Y|YS]) :- seleciona_caminho(E,XS,YS).
+
+expande_gulosa([NodoAtual|Cam]/Custo/Estimativa, NodoFinal, Grafo, ExpandeCaminhos) :- findall([NovoNodo, NodoAtual | Cam]/NovoCusto/NovaEstimativa,
+                                                                                        (adjacente(NodoAtual, NovoNodo, CustoAresta, Grafo), 
+                                                                                         \+member(NovoNodo,Cam), 
+                                                                                         NovoCusto is CustoAresta + Custo, 
+                                                                                         distancia(NovoNodo, NodoFinal, NovaEstimativa)), 
+                                                                                        ExpandeCaminhos).
+
+
+inverso(Xs, Ys):-
+    inverso(Xs, [], Ys).
+
+inverso([], Xs, Xs).
+inverso([X|Xs],Ys, Zs):-
+       inverso(Xs, [X|Ys], Zs).
 

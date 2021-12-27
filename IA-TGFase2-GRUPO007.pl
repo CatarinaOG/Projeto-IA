@@ -140,7 +140,10 @@ estafeta(720, 2, [12,13]   , 1).
 
 dfDistancia(Grafo,Dest,Solucao,C):-
 	inicial(NodoInicial),
-	dfDistancia(Grafo,Dest,NodoInicial,[NodoInicial],Solucao,C).
+    statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
+	dfDistancia(Grafo,Dest,NodoInicial,[NodoInicial],Solucao,C),
+    statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
+    write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
 
 dfDistancia(Grafo, Dest, Dest, Historico, [], 0):- !.
 
@@ -154,14 +157,13 @@ dfDistancia(Grafo, Dest, NodoAtual, Historico, [Novo|Solucao], C):-
 %---------------------------------------------- Depth-First (Tempo) -----------------------------------------------
 
 
+
 dfTempo(Grafo, Id, Dest, Veiculo, Solucao, CTempo, CDistancia):-
 	inicial(NodoInicial),
 	dfDistancia(Grafo, Dest,NodoInicial,[NodoInicial],Solucao,CDistancia),
     encomendaNE(Id,Peso,_,_,_,_,_,_,_),
     custoFinalDec(Veiculo, Peso, CDistancia, CTempo).
-
-
-
+    
 custoFinalDec(bicicleta, Peso, CustoDist, CustoTempo) :-
     velocidadeMedia(bicicleta,X),
     CustoTempo is CustoDist/(X-(0.7*Peso)).
@@ -173,3 +175,48 @@ custoFinalDec(bicicleta, Peso, CustoDist, CustoTempo) :-
 custoFinalDec(carro, Peso, CustoDist, CustoTempo) :-
     velocidadeMedia(carro,X),
     CustoTempo is CustoDist/(X-(0.1*Peso)).
+
+
+%---------------------------------------------- Breath-First (Distancia) -----------------------------------------------
+
+
+bfDistancia(Grafo,Dest,Solucao/C):-
+        inicial(EstadoInicial),
+        bfDistancia2(Grafo,Dest,[[EstadoInicial]/0],Solucao/C).
+
+bfDistancia2(Grafo,Dest,[[Dest|T]/C|_],Solucao/C):-
+        reverse([Dest|T],Solucao).
+
+bfDistancia2(Grafo,Dest,[EstadosA|Outros],Solucao):-
+        EstadosA=[Act|Cam]/CA,
+        findall([Novo|[Act|Cam]]/CN,
+                (Dest\==Act,adjacente(Act, Novo, C1, Grafo),\+member(Novo,[Act|Cam]), CN is CA + C1),
+                Novos),
+        append(Outros,Novos,Todos),
+        bfDistancia2(Grafo,Dest,Todos,Solucao).
+
+
+%---------------------------------------------- Breath-First (Tempo) -----------------------------------------------
+
+
+bfTempo(Grafo,Dest,Solucao/C):-
+        inicial(EstadoInicial),
+        bfTempo2(Grafo,Dest,[[EstadoInicial]/0],Solucao/C).
+
+bfTempo2(Grafo,Dest,[[Dest|T]/C|_],Solucao/C):-
+        reverse([Dest|T],Solucao).
+
+bfTempo2(Grafo,Dest,[EstadosA|Outros],Solucao):-
+        EstadosA=[Act|Cam]/CA,
+        findall([Novo|[Act|Cam]]/CN,
+                (Dest\==Act,adjacente(Act, Novo, C1, Grafo),\+member(Novo,[Act|Cam]), CN is CA + C1),
+                Novos),
+        append(Outros,Novos,Todos),
+        bfTempo2(Grafo,Dest,Todos,Solucao).
+
+
+
+
+
+
+

@@ -138,8 +138,6 @@ estafeta(720, 2, [12,13]   , 1).
 %---------------------------------------------- Depth-First (Distancia) -----------------------------------------------
 
 
-%purple burglar alarm
-
 
 dfDistancia(Grafo,Dest,Solucao,C):-
 	inicial(NodoInicial),
@@ -159,7 +157,7 @@ dfDistancia(Grafo, Dest, NodoAtual, Historico, [Novo|Solucao], C):-
 
 %---------------------------------------------- Depth-First (Tempo) -----------------------------------------------
 
-
+%falta funcao para determinar veiculo
 
 dfTempo(Grafo, Id, Dest, Veiculo, Solucao, CTempo, CDistancia):-
 	inicial(NodoInicial),
@@ -201,39 +199,32 @@ bfDistancia2(Grafo,Dest,[EstadosA|Outros],Solucao):-
 
 %---------------------------------------------- Breath-First (Tempo) -----------------------------------------------
 
+%falta funcao para determinar veiculo
 
-bfTempo(Grafo,Dest,Solucao/C):-
-        inicial(EstadoInicial),
-        bfTempo2(Grafo,Dest,[[EstadoInicial]/0],Solucao/C).
-
-bfTempo2(Grafo,Dest,[[Dest|T]/C|_],Solucao/C):-
-        reverse([Dest|T],Solucao).
-
-bfTempo2(Grafo,Dest,[EstadosA|Outros],Solucao):-
-        EstadosA=[Act|Cam]/CA,
-        findall([Novo|[Act|Cam]]/CN,
-                (Dest\==Act,adjacente(Act, Novo, C1, Grafo),\+member(Novo,[Act|Cam]), CN is CA + C1),
-                Novos),
-        append(Outros,Novos,Todos),
-        bfTempo2(Grafo,Dest,Todos,Solucao).
+bfTempo(Grafo, Id, Dest, Veiculo, Solucao, CTempo, CDistancia):-
+        bfDistancia(Grafo,Dest,Solucao/CDistancia),
+        encomendaNE(Id,Peso,_,_,_,_,_,_,_),
+        custoFinalDec(Veiculo, Peso, CDistancia, CTempo).
+        
 
 
-%------------------------------------ greedy distancia ---------------------------------------------------
+%----------------------------------------------- Greedy (Distancia) ---------------------------------------------------
 
-resolve_greedy(NodoInicial, NodoFinal, Grafo, Caminho/Custo):- distancia(NodoInicial, NodoFinal, Estima),
-                                                        greedy([[NodoInicial]/0/Estima], NodoFinal, Grafo, ICaminho/Custo/SolEst),
-                                                        inverso(ICaminho, Caminho).
+greedyDistancia(NodoFinal, Grafo, Caminho/Custo):-  inicial(NodoInicial),
+                                                    distancia(NodoInicial, NodoFinal, Estima),
+                                                    greedy([[NodoInicial]/0/Estima], NodoFinal, Grafo, ICaminho/Custo/SolEst),
+                                                    inverso(ICaminho, Caminho).
 
 
 greedy(Caminhos, NodoFinal, Grafo, [NodoFinal|Cam]/Custo/Est) :- melhorEst(Caminhos, [NodoFinal|Cam]/Custo/Est),!.
 
-                                    
+
 greedy(Caminhos, NodoFinal, Grafo, Caminho) :- melhorEst(Caminhos, MelhorCaminho),
-                             seleciona_caminho(MelhorCaminho, Caminhos, OutrosCaminhos),
-                             expande_gulosa(MelhorCaminho, NodoFinal, Grafo, ExpandeCaminhos),
-                             append(OutrosCaminhos, ExpandeCaminhos, NovosCaminhos),
-                             greedy(NovosCaminhos, NodoFinal, Grafo, Caminho).
-                             
+                                               seleciona_caminho(MelhorCaminho, Caminhos, OutrosCaminhos),
+                                               expande_gulosa(MelhorCaminho, NodoFinal, Grafo, ExpandeCaminhos),
+                                               append(OutrosCaminhos, ExpandeCaminhos, NovosCaminhos),
+                                               greedy(NovosCaminhos, NodoFinal, Grafo, Caminho).
+
 
 
 melhorEst([E/Custo/Est], E/Custo/Est).
@@ -244,8 +235,6 @@ melhorEst([E1/Custo1/Est1, E2/Custo2/Est2 | Outros],BestE/Custo/BestEst):-
 melhorEst([E1/Custo1/Est1, E2/Custo2/Est2 | Outros],BestE/Custo/BestEst):-
     Est1 =< Est2,
     melhorEst([E1/Custo1/Est1 | Outros], BestE/Custo/BestEst).
-
-
 
 
 obtem_melhor_g([Caminho], Caminho) :- !.
@@ -272,4 +261,37 @@ inverso(Xs, Ys):-
 inverso([], Xs, Xs).
 inverso([X|Xs],Ys, Zs):-
        inverso(Xs, [X|Ys], Zs).
+
+
+
+%----------------------------------------------- Greedy (Tempo) ---------------------------------------------------
+
+%falta predicado para descobrir veiculo 
+
+greedyTempo(Grafo, Id, NodoFinal, Veiculo, Caminho, CTempo, CustoDistancia):- 
+        greedyDistancia(NodoFinal, Grafo, Caminho/CustoDistancia),
+        encomendaNE(Id,Peso,_,_,_,_,_,_,_),
+        custoFinalDec(Veiculo, Peso, CustoDistancia, CTempo).
+
+
+                                                                           
+%------------------------------------- Depth First com profundidade limitada --------------------------------------
+
+depthFirstLimited(Grafo, Id, NodoFinal, Veiculo, [NodoInicial | Caminho], CustoDistancia, Prof) :-
+        inicial(NodoInicial),
+        depthFirstLimitedAux(Grafo, NodoInicial, NodoFinal, [NodoInicial], Caminho, CustoDistancia, Prof).
+
+
+depthFirstLimitedAux(Grafo, NodoAtual, NodoFinal, Historico, [], 0, 0) :- !.
+depthFirstLimitedAux(Grafo, NodoFinal, NodoFinal, Historico, [], 0, Prof) :- !.
+
+depthFirstLimitedAux(Grafo, NodoAtual, NodoFinal, Historico, [ProxNodo|Caminho], CustoDistancia, Prof) :- 
+        adjacente(NodoAtual, ProxNodo, ProxCusto, Grafo),
+        \+ member(ProxNodo, Historico),
+        NProf is Prof - 1,
+        depthFirstLimitedAux(Grafo, ProxNodo, NodoFinal, [ProxNodo | Historico], Caminho, C, NProf),
+        CustoDistancia is C + ProxCusto.
+
+
+
 

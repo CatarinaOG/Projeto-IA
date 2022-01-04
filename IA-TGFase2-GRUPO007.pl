@@ -3,9 +3,9 @@
 :- discontiguous expande_gulosa/4.
 :- discontiguous get_date_time_value/2.
 
-%---------------------------------------------------------------------------------
-%----------------------------------- ENTIDADES -----------------------------------
-%---------------------------------------------------------------------------------
+%------------------------------------------------------------------------------------------------------------------
+%----------------------------------------- ENTIDADES --------------------------------------------------------------
+%------------------------------------------------------------------------------------------------------------------
 
 %veiculo(TipoDeVeiculo,ClassificaçaoEcologica)
 
@@ -152,10 +152,10 @@ encomendaNE(9 , 9 , 3 , rua_do_outeiro               , "Celeiros"        , 2  , 
 encomendaNE(10, 25, 13, rua_da_escola                , "Martim"          , 50 , 290   , 321).
 encomendaNE(11, 12, 2 , travessa_da_carcova          , "Martim"          , 25 , 105   , 649).
 encomendaNE(14, 23, 26, rua_dos_pomares              , "Martim"          , 250, 789   , 649).
-encomendaNE(15, 23, 26, rua_de_segoes                , "Celeiros"        , 15 , 12345 , 654).
+encomendaNE(15, 23, 26, rua_monte_carrinhos          , "Celeiros"        , 15 , 12345 , 654).
 encomendaNE(16, 23, 26, rua_da_pontinha              , "Celeiros"        , 8  , 456   , 321).
-encomendaNE(17, 23, 26, rua_do_outeiro               , "Celeiros"        , 9  , 105   , 720).
-encomendaNE(18, 5 , 27, rua_sub_carreira             , "Celeiros"        , 10 , 121   , 649).
+encomendaNE(17, 23, 26, rua_sub_carreira             , "Celeiros"        , 9  , 105   , 720).
+encomendaNE(18, 5 , 27, rua_do_outeiro               , "Celeiros"        , 10 , 121   , 649).
 encomendaNE(19, 10, 13, rua_das_andrias              , "Celeiros"        , 9  , 141   , 720).
 encomendaNE(20,  8, 7 , rua_da_bolsinha              , "Martim"          , 21 , 69420 , 987).
 encomendaNE(21, 50, 30, travessa_da_carcova          , "Martim"          , 40 , 141   , 654).
@@ -176,13 +176,17 @@ dataE(13, 8/08/09/2020, 8/12/11/2020, 7/14/11/2020 ).
 %dataNE(IdEnc, DataEnc, Prazo).
 
 dataNE(8,  01/01/2022, 18/03/01/2022).  % ja passou
-dataNE(9,  01/01/2022, 19/03/01/2022).  % tem 30 min
+dataNE(9,  01/01/2022, 19/04/01/2022).  % ja passou
 dataNE(10, 02/01/2022, 17/05/01/2022).  % ja passou o prazo
 dataNE(11, 02/01/2022, 19/23/01/2022).  % ainda falta muito para acabar o prazo
 dataNE(14, 01/01/2022, 14/04/01/2022).  % ainda falta muito para acabar o prazo
 dataNE(15, 01/01/2022, 15/04/01/2022).  % ainda falta muito para acabar o prazo
-dataNE(16, 02/01/2022, 17/10/01/2022).  % ainda falta muito para acabar o prazo
+dataNE(16, 02/01/2022, 17/10/05/2022).  % ainda falta muito para acabar o prazo (esta deverá ser usada para testes em que a encomenda estará ainda dentro do prazo)
 dataNE(17, 01/01/2022, 10/07/01/2022).  % ainda falta muito para acabar o prazo
+dataNE(18, 01/01/2022, 20/06/01/2022).
+dataNE(19, 02/01/2022, 22/07/01/2022).
+dataNE(20, 04/01/2022, 13/06/01/2022).
+dataNE(21, 03/01/2022, 14/05/01/2022).
 
 
 %cliente(Id,IdsEncomendas).
@@ -207,7 +211,7 @@ estafeta(720, 2, [12,13,17,19]   , 1).
 
 
 
-%---------------------------------------------- Depth-First (Distancia) -----------------------------------------------
+%---------------------------------------------- Depth-First (Distancia) -------------------------------------------
 
 
 
@@ -228,19 +232,19 @@ dfDistancia(Grafo, Dest, NodoAtual, Historico, [Novo|Solucao], C):-
     C is C1 + C2.
 
 
-%---------------------------------------------- Depth-First (Tempo) ----------------------------------------------
+%---------------------------------------------- Depth-First (Tempo) -----------------------------------------------
 
 
-dfTempo(Grafo, Id, Dest, Solucao, CTempo, CDistancia, Veiculo):-
+dfTempo(Grafo, Id, Solucao, CTempo, CDistancia, Veiculo):-
 	inicial(NodoInicial),
+    encomendaNE(Id,Peso,_,Dest,_,_,_,_),
 	dfDistancia(Grafo, Dest,NodoInicial,[NodoInicial],Solucao,CDistancia),
-    encomendaNE(Id,Peso,_,_,_,_,_,_),
     dataNE(Id,_,Prazo),
     escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo).
 
 
 
-%---------------------------------------------- Breath-First (Distancia) -----------------------------------------------
+%---------------------------------------------- Breath-First (Distancia) ------------------------------------------
 
 
 bfDistancia(Grafo,Dest,Solucao/C):-
@@ -259,21 +263,20 @@ bfDistancia2(Grafo,Dest,[EstadosA|Outros],Solucao):-
         bfDistancia2(Grafo,Dest,Todos,Solucao).
 
 
-%---------------------------------------------- Breath-First (Tempo) -----------------------------------------------
+%---------------------------------------------- Breath-First (Tempo) ----------------------------------------------
 
-%falta funcao para determinar veiculo
 
-bfTempo(Grafo, Id, Dest, Solucao, CTempo, CDistancia, Veiculo):-
+bfTempo(Grafo, Id, Solucao, CTempo, CDistancia, Veiculo):-
         statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
+        encomendaNE(Id,Peso,_,Dest,_,_,_,_),
         bfDistancia(Grafo,Dest,Solucao/CDistancia),
-        encomendaNE(Id,Peso,_,_,_,_,_,_),
         dataNE(Id,_,Prazo),
         escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo),
         statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
         write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
         
 
-%---------------------------------------- Depth First com aprofundamento iterativo (Distancia) --------------------------------
+%---------------------------------------- Depth First com aprofundamento iterativo (Distancia) --------------------
 
 
 iterativeDeepeningDistancia(Grafo, NodoFinal, Caminho, CustoDistancia, ProfSol) :-
@@ -285,17 +288,26 @@ iterativeDeepeningDistancia(Grafo, NodoFinal, Caminho, CustoDistancia, ProfSol) 
 
 iterativeDeepeningDistanciaAux(Grafo, NodoFinal, NodoInicial, Solucao, CustoSol, Prof, Prof) :-
         findall([NodoInicial | Caminho]/CustoDistancia, depthFirstLimitedDistancia(Grafo, NodoFinal, [NodoInicial | Caminho], CustoDistancia, Prof), Sols),
-        encontraSolucao(Sols, NodoFinal, Solucao, CustoSol).
+        encontraSolucao(Sols, NodoFinal, Solucao, CustoSol), !.
 
 iterativeDeepeningDistanciaAux(Grafo, NodoFinal, NodoInicial, Solucao, CustoDistancia, Prof, ProfSol) :-
         NovaProf is Prof + 1,
         iterativeDeepeningDistanciaAux(Grafo, NodoFinal, NodoInicial, Solucao, CustoDistancia, NovaProf, ProfSol).
 
-
-
-
 encontraSolucao([Solucao/CS | OutrasSolucoes], NodoFinal, Solucao, CS) :- member(NodoFinal, Solucao).
 encontraSolucao([Sol | Solucoes], NodoFinal, Solucao, CS) :- encontraSolucao(Solucoes, NodoFinal, Solucao, CS).
+
+%---------------------------------------- Depth First com aprofundamento iterativo (Tempo) ------------------------
+
+iterativeDeepeningTempo(Grafo, Id, Caminho, CTempo, CDistancia, Veiculo, ProfSol) :-
+        statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
+        encomendaNE(Id,Peso,_,Dest,_,_,_,_),
+        iterativeDeepeningDistancia(Grafo,Dest,Caminho,CDistancia,ProfSol),
+        dataNE(Id,_,Prazo),
+        escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo),
+        statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
+        write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
+
 
 
 %------------------------------------- Depth First com profundidade limitada (Distancia) --------------------------
@@ -319,19 +331,15 @@ depthFirstLimitedAux(Grafo, NodoAtual, NodoFinal, Historico, [ProxNodo|Caminho],
 
 %------------------------------------- Depth First com profundidade limitada (Tempo) ------------------------------
 
-depthFirstLimitedTempo(Grafo, Id, NodoFinal, [NodoInicial | Caminho], CDistancia, Prof, CTempo, Veiculo) :- 
+depthFirstLimitedTempo(Grafo, Id, [NodoInicial | Caminho], CDistancia, Prof, CTempo, Veiculo) :- 
         statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
+        encomendaNE(Id, Peso,_,NodoFinal,_,_,_,_),
         depthFirstLimitedDistancia(Grafo, NodoFinal, [NodoInicial | Caminho], CDistancia, Prof),
-        encomendaNE(Id, Peso,_,_,_,_,_,_),
         dataNE(Id,_,Prazo),
         escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo),
         write([NodoInicial | Caminho]),
         statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
         write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
-
-
-
-
 
 %----------------------------------------------- Greedy (Distancia) -----------------------------------------------
 
@@ -365,12 +373,10 @@ melhorEst([E1/Custo1/Est1, E2/Custo2/Est2 | Outros],BestE/Custo/BestEst):-
 
 %----------------------------------------------- Greedy (Tempo) ---------------------------------------------------
 
-%falta predicado para descobrir veiculo 
-
-greedyTempo(Grafo, Id, NodoFinal, Caminho, CTempo, CDistancia, Veiculo):- 
+greedyTempo(Grafo, Id, Caminho, CTempo, CDistancia, Veiculo):- 
         statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
+         encomendaNE(Id,Peso,_,NodoFinal,_,_,_,_),
         greedyDistancia(Grafo, NodoFinal, Caminho/CDistancia),
-        encomendaNE(Id,Peso,_,_,_,_,_,_),
         dataNE(Id,_,Prazo),
         escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo),
         statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
@@ -417,10 +423,10 @@ seleciona_caminho(E, [X|XS], [X|YS]) :- seleciona_caminho(E,XS,YS).
 
 %--------------------------------------------------- A* (Tempo) ---------------------------------------------------
 
-resolveAEstrelaTempo(Grafo, NodoFinal, Id, Caminho, CustoDist, CustoTempo, Veiculo) :-
+resolveAEstrelaTempo(Grafo,Id, Caminho, CustoDist, CustoTempo, Veiculo) :-
         statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
+        encomendaNE(Id, Peso,_,NodoFinal,_,_,_,_),
         resolveAEstrelaDistancia(Grafo, NodoFinal, Caminho/CustoDist),
-        encomendaNE(Id, Peso,_,_,_,_,_,_),
         dataNE(Id,_,Prazo),
         escolheVeiculo(Prazo, Peso, CustoDist, CustoTempo, Veiculo),
         statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
@@ -430,8 +436,8 @@ resolveAEstrelaTempo(Grafo, NodoFinal, Id, Caminho, CustoDist, CustoTempo, Veicu
 
 %-------------------------------------------- circuito mais ecologico (tempo)  ------------------------------------
 
-maisEco(Grafo, NodoFinal, Id, Caminho, CDistancia, CTempo, Veiculo) :- 
-    resolveAEstrelaTempo(Grafo, NodoFinal, Id, Caminho, CDistancia, CTempo, Veiculo).
+maisEco(Grafo, Id, Caminho, CDistancia, CTempo, Veiculo) :- 
+    resolveAEstrelaTempo(Grafo, Id, Caminho, CDistancia, CTempo, Veiculo).
 
 
 %--------------------------------------------- circuito mais curto (distancia) ------------------------------------
@@ -440,22 +446,24 @@ maisCurto(Grafo, NodoFinal, Caminho, Custo) :-
     resolveAEstrelaDistancia(Grafo, NodoFinal, Caminho/Custo).
 
 
-%------------------------------------------------ circuito com mais entregas/maisPeso/maisVo --------------------------------------
+%------------------------------------ circuito com mais entregas/maisPeso/maisVolume ------------------------------
 %encomendaNE(Id,Peso,Volume,Rua,Freguesia,Preço,idCliente,idEstafeta).
 
-maisEntregas(Grafo, Id, CaminhoMelhor/NrEntregas , CaminhoMaisPesado/Pesos, CaminhoMelhorVolume/Volumes) :-
+melhorCircuito(Grafo, Id, CaminhoMelhor/NrEntregas , CaminhoMaisPesado/Pesos, CaminhoMelhorVolume/Volumes) :-
     encomendaNE(Id,Peso,Volume, NodoFinal, _, _, _, _),
     findall(Cam , bfDistancia(Grafo,NodoFinal,Cam/CDist), Caminhos),
     calculaNumeroEnc(Caminhos, CaminhosEnc),
     calculaMelhor(CaminhosEnc,CaminhoMelhor/NrEntregas),
     calculaPesos(Caminhos,CaminhosPesados),
-    calculaMelhor(CaminhosPesados, CaminhoMelhorPesado/Pesos).
+    calculaMelhor(CaminhosPesados, CaminhoMaisPesado/Pesos),
+    calculaVolumes(Caminhos,CaminhosVolume),
+    calculaMelhor(CaminhosVolume, CaminhoMelhorVolume/Volumes).
 
 maisVolume(Grafo, Id, CaminhoMelhorVolume/Volumes) :-
     encomendaNE(Id,Peso,Volume, NodoFinal, _, _, _, _),
     findall(Cam , bfDistancia(Grafo,NodoFinal,Cam/CDist), Caminhos),
     calculaVolumes(Caminhos,CaminhosVolume),
-    calculaVolumeEncAux(CaminhosVolume, CaminhoMelhorVolume/Volumes).
+    calculaMelhor(CaminhosVolume, CaminhoMelhorVolume/Volumes).
 
 
 
@@ -500,7 +508,6 @@ calculaVolumeEncAux([Rua | Ruas], Res) :- findall(Volume , encomendaNE(_,_,Volum
 
 
 %--------------------------------------------- escolha do veículo  ------------------------------------------------
-
 
 escolheVeiculo(Prazo, Peso, CDistancia, CustoTempo, VeiculoSolucao):-
     findall((CTempo, Veiculo), (custoFinalDec(Veiculo, Peso, CDistancia, CTempo), suportaPeso(Veiculo, Peso), entregaDentroPrazo(Prazo, CTempo)), Solucoes),
@@ -550,11 +557,11 @@ custoFinalDec(carro, Peso, CustoDist, CustoTempo) :-
     CustoTempo is CustoDist/(X-(0.1*Peso)).
 
 
-%---------------------------------- Encontra o melhor Caminho com a BreathFirst--------------------------------------
+%---------------------------------- Encontra o melhor Caminho com a BreathFirst -----------------------------------
 
-encontraMelhorBF(Grafo, Id, NodoFinal, Veiculo, MelhorCusto, MelhorCaminho) :-
+encontraMelhorBF(Grafo, Id, Veiculo, MelhorCusto, MelhorCaminho) :-
     statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
-    findall(Solucao/CTempo, bfTempo(Grafo, Id, NodoFinal, Solucao, CTempo, CDistancia, Veiculo), Solucoes),
+    findall(Solucao/CTempo, bfTempo(Grafo, Id, Solucao, CTempo, CDistancia, Veiculo), Solucoes),
     encontraMelhor(Solucoes, MelhorCaminho/MelhorCusto),
     statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
     write('Execution took '), write(ExecutionTime), write(' ms.'), nl.

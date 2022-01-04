@@ -1,7 +1,7 @@
 :- set_prolog_flag( singleton,off ).
 :- discontiguous seleciona_caminho/3.
 :- discontiguous expande_gulosa/4.
-
+:- discontiguous get_date_time_value/2.
 
 %---------------------------------------------------------------------------------
 %----------------------------------- ENTIDADES -----------------------------------
@@ -128,8 +128,8 @@ grafoMartim(grafo(  [ aresta(armazem                 , rua_de_caldelas         ,
                       aresta(rua_da_venda            , rua_da_estrada_real     ,0.35)])).
 
 
-adjacente(X,Y,D, grafo(Es)) :- member(aresta(X,Y,D),Es).
-adjacente(X,Y,D, grafo(Es)) :- member(aresta(Y,X,D),Es).
+adjacente(grafo(Es), X,Y,D) :- member(aresta(X,Y,D),Es).
+adjacente(grafo(Es), X,Y,D) :- member(aresta(Y,X,D),Es).
 
 
 %encomenda(Id,Peso,Volume,Classificacao,Rua,Freguesia,Veiculo,Preço,idCliente,idEstafeta).
@@ -145,7 +145,7 @@ encomenda(12, 16, 10, 1, avenida_do_covedelo          , "Celeiros"        , mota
 encomenda(13, 7 , 6 , 3, rua_dos_passaros             , "Prado"           , bicicleta , 120, 290   , 720).
 
 
-%encomendaNE(Id,Peso,Volume,Classificacao,Rua,Freguesia,Preço,idCliente,idEstafeta).
+%encomendaNE(Id,Peso,Volume,Rua,Freguesia,Preço,idCliente,idEstafeta).
 
 encomendaNE(8 , 10, 12, rua_da_riquinha              , "Martim"          , 23 , 12345 , 654).
 encomendaNE(9 , 9 , 3 , rua_do_outeiro               , "Celeiros"        , 2  , 123   , 654).
@@ -163,27 +163,26 @@ encomendaNE(21, 50, 30, travessa_da_carcova          , "Martim"          , 40 , 
 
 %dataE(IdEnc ,DataEnc, Prazo, DataEnt).
 
-dataE(1,  20/11/21, 21/11/21, 21/11/21 ).
-dataE(2,  20/11/21, 23/11/21, 22/11/21 ).
-dataE(3,  25/12/21, 31/12/21, 01/01/22 ).
-dataE(4,  31/12/21, 21/11/21, 21/11/21 ).
-dataE(5,  27/03/21, 28/03/21, 28/03/21 ).
-dataE(6,  09/12/19, 10/12/19, 11/12/19 ).
-dataE(7,  03/07/18, 15/07/18, 18/07/18 ).
-dataE(12, 02/10/20, 14/11/20, 12/11/20 ).
-dataE(13, 08/09/20, 12/11/20, 14/11/20 ).
+dataE(1,  2/20/11/2021, 2/21/11/2021, 1/21/11/2021 ).
+dataE(2,  3/20/11/2021, 3/23/11/2021, 2/22/11/2021 ).
+dataE(3,  4/25/12/2021, 4/31/12/2021, 3/01/01/2022 ).
+dataE(4,  5/31/12/2021, 5/21/11/2021, 4/21/11/2021 ).
+dataE(5,  6/27/03/2021, 6/28/03/2021, 5/28/03/2021 ).
+dataE(6,  7/09/12/2019, 7/10/12/2019, 6/11/12/2019 ).
+dataE(7,  8/03/07/2018, 8/15/07/2018, 7/18/07/2018 ).
+dataE(12, 5/02/10/2020, 5/14/11/2020, 4/12/11/2020 ).
+dataE(13, 8/08/09/2020, 8/12/11/2020, 7/14/11/2020 ).
 
 %dataNE(IdEnc, DataEnc, Prazo).
 
-dataNE(8,  20/11/21, 21/11/21).
-dataNE(9,  20/11/21, 23/11/21).
-dataNE(10, 28/11/21, 12/01/22).
-dataNE(11, 23/12/21, 23/01/22).
-dataNE(14, 01/10/21, 04/10/22).
-dataNE(15, 01/01/22, 04/01/22).
-dataNE(16, 03/02/22, 10/02/22).
-dataNE(17, 05/01/22, 07/01/22).
-
+dataNE(8,  01/01/2022, 18/03/01/2022).  % ja passou
+dataNE(9,  01/01/2022, 19/03/01/2022).  % tem 30 min
+dataNE(10, 02/01/2022, 17/05/01/2022).  % ja passou o prazo
+dataNE(11, 02/01/2022, 19/23/01/2022).  % ainda falta muito para acabar o prazo
+dataNE(14, 01/01/2022, 14/04/01/2022).  % ainda falta muito para acabar o prazo
+dataNE(15, 01/01/2022, 15/04/01/2022).  % ainda falta muito para acabar o prazo
+dataNE(16, 02/01/2022, 17/10/01/2022).  % ainda falta muito para acabar o prazo
+dataNE(17, 01/01/2022, 10/07/01/2022).  % ainda falta muito para acabar o prazo
 
 
 %cliente(Id,IdsEncomendas).
@@ -223,33 +222,22 @@ dfDistancia(Grafo,Dest,Solucao,C):-
 dfDistancia(Grafo, Dest, Dest, Historico, [], 0):- !.
 
 dfDistancia(Grafo, Dest, NodoAtual, Historico, [Novo|Solucao], C):-
-	adjacente(NodoAtual, Novo, C1, Grafo),
+	adjacente(Grafo, NodoAtual, Novo, C1),
 	\+ member(Novo, Historico),
 	dfDistancia(Grafo, Dest, Novo, [NodoAtual|Historico], Solucao, C2),
     C is C1 + C2.
 
 
-%---------------------------------------------- Depth-First (Tempo) -----------------------------------------------
+%---------------------------------------------- Depth-First (Tempo) ----------------------------------------------
 
-%falta funcao para determinar veiculo
 
-dfTempo(Grafo, Id, Dest, Veiculo, Solucao, CTempo, CDistancia):-
+dfTempo(Grafo, Id, Dest, Solucao, CTempo, CDistancia, Veiculo):-
 	inicial(NodoInicial),
 	dfDistancia(Grafo, Dest,NodoInicial,[NodoInicial],Solucao,CDistancia),
     encomendaNE(Id,Peso,_,_,_,_,_,_),
-    custoFinalDec(Veiculo, Peso, CDistancia, CTempo).
-    
-custoFinalDec(bicicleta, Peso, CustoDist, CustoTempo) :-
-    velocidadeMedia(bicicleta,X),
-    CustoTempo is CustoDist/(X-(0.7*Peso)).
-    
-custoFinalDec(mota, Peso, CustoDist, CustoTempo) :-
-    velocidadeMedia(mota,X),
-    CustoTempo is CustoDist/(X-(0.5*Peso)).
-    
-custoFinalDec(carro, Peso, CustoDist, CustoTempo) :-
-    velocidadeMedia(carro,X),
-    CustoTempo is CustoDist/(X-(0.1*Peso)).
+    dataNE(Id,_,Prazo),
+    escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo).
+
 
 
 %---------------------------------------------- Breath-First (Distancia) -----------------------------------------------
@@ -265,7 +253,7 @@ bfDistancia2(Grafo,Dest,[[Dest|T]/C|_],Solucao/C):-
 bfDistancia2(Grafo,Dest,[EstadosA|Outros],Solucao):-
         EstadosA=[Act|Cam]/CA,
         findall([Novo|[Act|Cam]]/CN,
-                (Dest\==Act,adjacente(Act, Novo, C1, Grafo),\+member(Novo,[Act|Cam]), CN is CA + C1),
+                (Dest\==Act,adjacente(Grafo, Act, Novo, C1),\+member(Novo,[Act|Cam]), CN is CA + C1),
                 Novos),
         append(Outros,Novos,Todos),
         bfDistancia2(Grafo,Dest,Todos,Solucao).
@@ -275,47 +263,17 @@ bfDistancia2(Grafo,Dest,[EstadosA|Outros],Solucao):-
 
 %falta funcao para determinar veiculo
 
-bfTempo(Grafo, Id, Dest, Veiculo, Solucao, CTempo, CDistancia):-
+bfTempo(Grafo, Id, Dest, Solucao, CTempo, CDistancia, Veiculo):-
         statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
         bfDistancia(Grafo,Dest,Solucao/CDistancia),
         encomendaNE(Id,Peso,_,_,_,_,_,_),
-        custoFinalDec(Veiculo, Peso, CDistancia, CTempo),
+        dataNE(Id,_,Prazo),
+        escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo),
         statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
         write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
         
 
-%------------------------------------- Depth First com profundidade limitada (Distancia) --------------------------
-
-depthFirstLimitedDistancia(Grafo, NodoFinal,[NodoInicial | Caminho], CustoDistancia, Prof) :-
-        inicial(NodoInicial),
-        depthFirstLimitedAux(Grafo, NodoInicial, NodoFinal, [NodoInicial], Caminho, CustoDistancia, Prof).
-
-
-depthFirstLimitedAux(Grafo, NodoAtual, NodoFinal, Historico, [], 0, 0) :- !.
-depthFirstLimitedAux(Grafo, NodoFinal, NodoFinal, Historico, [], 0, Prof) :- !.
-
-depthFirstLimitedAux(Grafo, NodoAtual, NodoFinal, Historico, [ProxNodo|Caminho], CustoDistancia, Prof) :- 
-        adjacente(NodoAtual, ProxNodo, ProxCusto, Grafo),
-        \+ member(ProxNodo, Historico),
-        NProf is Prof - 1,
-        depthFirstLimitedAux(Grafo, ProxNodo, NodoFinal, [ProxNodo | Historico], Caminho, C, NProf),
-        CustoDistancia is C + ProxCusto.
-
-
-
-%------------------------------------- Depth First com profundidade limitada (Tempo) ------------------------------
-
-depthFirstLimitedTempo(Grafo, Id, Veiculo, NodoFinal, [NodoInicial | Caminho], CustoDistancia, Prof, CustoTempo) :- 
-        statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
-        depthFirstLimitedDistancia(Grafo, NodoFinal, [NodoInicial | Caminho], CustoDistancia, Prof),
-        encomendaNE(Id, Peso,_,_,_,_,_,_),
-        custoFinalDec(Veiculo, Peso, CustoDistancia, CustoTempo),
-        write([NodoInicial | Caminho]),
-        statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
-        write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
-
-
-%---------------------------------------- Depth First com aprofundamento iterativo --------------------------------
+%---------------------------------------- Depth First com aprofundamento iterativo (Distancia) --------------------------------
 
 
 iterativeDeepeningDistancia(Grafo, NodoFinal, Caminho, CustoDistancia, ProfSol) :-
@@ -340,22 +298,57 @@ encontraSolucao([Solucao/CS | OutrasSolucoes], NodoFinal, Solucao, CS) :- member
 encontraSolucao([Sol | Solucoes], NodoFinal, Solucao, CS) :- encontraSolucao(Solucoes, NodoFinal, Solucao, CS).
 
 
+%------------------------------------- Depth First com profundidade limitada (Distancia) --------------------------
+
+depthFirstLimitedDistancia(Grafo, NodoFinal,[NodoInicial | Caminho], CustoDistancia, Prof) :-
+        inicial(NodoInicial),
+        depthFirstLimitedAux(Grafo, NodoInicial, NodoFinal, [NodoInicial], Caminho, CustoDistancia, Prof).
+
+
+depthFirstLimitedAux(Grafo, NodoAtual, NodoFinal, Historico, [], 0, 0) :- !.
+depthFirstLimitedAux(Grafo, NodoFinal, NodoFinal, Historico, [], 0, Prof) :- !.
+
+depthFirstLimitedAux(Grafo, NodoAtual, NodoFinal, Historico, [ProxNodo|Caminho], CustoDistancia, Prof) :- 
+        adjacente(Grafo, NodoAtual, ProxNodo, ProxCusto),
+        \+ member(ProxNodo, Historico),
+        NProf is Prof - 1,
+        depthFirstLimitedAux(Grafo, ProxNodo, NodoFinal, [ProxNodo | Historico], Caminho, C, NProf),
+        CustoDistancia is C + ProxCusto.
+
+
+
+%------------------------------------- Depth First com profundidade limitada (Tempo) ------------------------------
+
+depthFirstLimitedTempo(Grafo, Id, NodoFinal, [NodoInicial | Caminho], CDistancia, Prof, CTempo, Veiculo) :- 
+        statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
+        depthFirstLimitedDistancia(Grafo, NodoFinal, [NodoInicial | Caminho], CDistancia, Prof),
+        encomendaNE(Id, Peso,_,_,_,_,_,_),
+        dataNE(Id,_,Prazo),
+        escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo),
+        write([NodoInicial | Caminho]),
+        statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
+        write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
+
+
+
+
+
 %----------------------------------------------- Greedy (Distancia) -----------------------------------------------
 
-greedyDistancia(NodoFinal, Grafo, Caminho/Custo):-  inicial(NodoInicial),
+greedyDistancia(Grafo, NodoFinal,  Caminho/Custo):- inicial(NodoInicial),
                                                     distancia(NodoInicial, NodoFinal, Estima),
-                                                    greedy([[NodoInicial]/0/Estima], NodoFinal, Grafo, ICaminho/Custo/SolEst),
+                                                    greedy(Grafo, [[NodoInicial]/0/Estima], NodoFinal, ICaminho/Custo/SolEst),
                                                     inverso(ICaminho, Caminho).
 
 
-greedy(Caminhos, NodoFinal, Grafo, [NodoFinal|Cam]/Custo/Est) :- melhorEst(Caminhos, [NodoFinal|Cam]/Custo/Est),!.
+greedy(Grafo, Caminhos, NodoFinal, [NodoFinal|Cam]/Custo/Est) :- melhorEst(Caminhos, [NodoFinal|Cam]/Custo/Est),!.
 
 
-greedy(Caminhos, NodoFinal, Grafo, Caminho) :- melhorEst(Caminhos, MelhorCaminho),
+greedy(Grafo, Caminhos, NodoFinal, Caminho) :- melhorEst(Caminhos, MelhorCaminho),
                                                seleciona_caminho(MelhorCaminho, Caminhos, OutrosCaminhos),
-                                               expande(MelhorCaminho, NodoFinal, Grafo, ExpandeCaminhos),
+                                               expande(Grafo, MelhorCaminho, NodoFinal, ExpandeCaminhos),
                                                append(OutrosCaminhos, ExpandeCaminhos, NovosCaminhos),
-                                               greedy(NovosCaminhos, NodoFinal, Grafo, Caminho).
+                                               greedy(Grafo, NovosCaminhos, NodoFinal, Caminho).
 
 
 
@@ -374,11 +367,12 @@ melhorEst([E1/Custo1/Est1, E2/Custo2/Est2 | Outros],BestE/Custo/BestEst):-
 
 %falta predicado para descobrir veiculo 
 
-greedyTempo(Grafo, Id, NodoFinal, Veiculo, Caminho, CTempo, CustoDistancia):- 
+greedyTempo(Grafo, Id, NodoFinal, Caminho, CTempo, CDistancia, Veiculo):- 
         statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
-        greedyDistancia(NodoFinal, Grafo, Caminho/CustoDistancia),
+        greedyDistancia(Grafo, NodoFinal, Caminho/CDistancia),
         encomendaNE(Id,Peso,_,_,_,_,_,_),
-        custoFinalDec(Veiculo, Peso, CustoDistancia, CTempo),
+        dataNE(Id,_,Prazo),
+        escolheVeiculo(Prazo, Peso, CDistancia, CTempo, Veiculo),
         statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
         write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
 
@@ -387,20 +381,20 @@ greedyTempo(Grafo, Id, NodoFinal, Veiculo, Caminho, CTempo, CustoDistancia):-
 
 %------------------------------------------------------A* (Distancia) ---------------------------------------------
 
-resolveAEstrelaDistancia(NodoFinal, Grafo, Caminho/Custo):-  inicial(NodoInicial),
+resolveAEstrelaDistancia(Grafo, NodoFinal, Caminho/Custo):-  inicial(NodoInicial),
                                                 distancia(NodoInicial, NodoFinal, Estima),
-                                                aEstrelaAux([[NodoInicial]/0/Estima], NodoFinal, Grafo, ICaminho/Custo/SolEst),
+                                                aEstrelaAux(Grafo, [[NodoInicial]/0/Estima], NodoFinal, ICaminho/Custo/SolEst),
                                                 inverso(ICaminho, Caminho).
 
 
-aEstrelaAux(Caminhos, NodoFinal, Grafo, [NodoFinal|Cam]/Custo/Est) :- melhorEstEstrela(Caminhos, [NodoFinal|Cam]/Custo/Est),!.
+aEstrelaAux(Grafo, Caminhos, NodoFinal, [NodoFinal|Cam]/Custo/Est) :- melhorEstEstrela(Caminhos, [NodoFinal|Cam]/Custo/Est),!.
 
 
-aEstrelaAux(Caminhos, NodoFinal, Grafo, Caminho) :- melhorEstEstrela(Caminhos, MelhorCaminho),
+aEstrelaAux(Grafo, Caminhos, NodoFinal, Caminho) :- melhorEstEstrela(Caminhos, MelhorCaminho),
                                                     seleciona_caminho(MelhorCaminho, Caminhos, OutrosCaminhos),
-                                                    expande(MelhorCaminho, NodoFinal, Grafo, ExpandeCaminhos),
+                                                    expande(Grafo, MelhorCaminho, NodoFinal, ExpandeCaminhos),
                                                     append(OutrosCaminhos, ExpandeCaminhos, NovosCaminhos),
-                                                    aEstrelaAux(NovosCaminhos, NodoFinal, Grafo, Caminho).
+                                                    aEstrelaAux(Grafo, NovosCaminhos, NodoFinal, Caminho).
 
 
 
@@ -423,38 +417,157 @@ seleciona_caminho(E, [X|XS], [X|YS]) :- seleciona_caminho(E,XS,YS).
 
 %--------------------------------------------------- A* (Tempo) ---------------------------------------------------
 
-resolveAEstrelaTempo(NodoFinal, Id, Veiculo, Grafo, Caminho, CustoDist, CustoTempo) :-
+resolveAEstrelaTempo(Grafo, NodoFinal, Id, Caminho, CustoDist, CustoTempo, Veiculo) :-
         statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
-        resolveAEstrelaDistancia(NodoFinal, Grafo, Caminho/CustoDist),
+        resolveAEstrelaDistancia(Grafo, NodoFinal, Caminho/CustoDist),
         encomendaNE(Id, Peso,_,_,_,_,_,_),
-        custoFinalDec(Veiculo, Peso, CustoDist, CustoTempo),
+        dataNE(Id,_,Prazo),
+        escolheVeiculo(Prazo, Peso, CustoDist, CustoTempo, Veiculo),
         statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
         write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
 
 
 
-%-------------------------------------------- circuito mais ecologico  --------------------------------------------
+%-------------------------------------------- circuito mais ecologico (tempo)  ------------------------------------
+
+maisEco(Grafo, NodoFinal, Id, Caminho, CDistancia, CTempo, Veiculo) :- 
+    resolveAEstrelaTempo(Grafo, NodoFinal, Id, Caminho, CDistancia, CTempo, Veiculo).
+
+
+%--------------------------------------------- circuito mais curto (distancia) ------------------------------------
+
+maisCurto(Grafo, NodoFinal, Caminho, Custo) :-
+    resolveAEstrelaDistancia(Grafo, NodoFinal, Caminho/Custo).
+
+
+%------------------------------------------------ circuito com mais entregas/maisPeso/maisVo --------------------------------------
+%encomendaNE(Id,Peso,Volume,Rua,Freguesia,Preço,idCliente,idEstafeta).
+
+maisEntregas(Grafo, Id, CaminhoMelhor/NrEntregas , CaminhoMaisPesado/Pesos, CaminhoMelhorVolume/Volumes) :-
+    encomendaNE(Id,Peso,Volume, NodoFinal, _, _, _, _),
+    findall(Cam , bfDistancia(Grafo,NodoFinal,Cam/CDist), Caminhos),
+    calculaNumeroEnc(Caminhos, CaminhosEnc),
+    calculaMelhor(CaminhosEnc,CaminhoMelhor/NrEntregas),
+    calculaPesos(Caminhos,CaminhosPesados),
+    calculaMelhor(CaminhosPesados, CaminhoMelhorPesado/Pesos).
+
+maisVolume(Grafo, Id, CaminhoMelhorVolume/Volumes) :-
+    encomendaNE(Id,Peso,Volume, NodoFinal, _, _, _, _),
+    findall(Cam , bfDistancia(Grafo,NodoFinal,Cam/CDist), Caminhos),
+    calculaVolumes(Caminhos,CaminhosVolume),
+    calculaVolumeEncAux(CaminhosVolume, CaminhoMelhorVolume/Volumes).
+
+
+
+
+calculaMelhor([Caminho/N1], Caminho/N1).
+calculaMelhor([Caminho1/N1, Caminho2/N2 | Caminhos], MelhorCaminho) :-
+        N1 >= N2, !,
+        calculaMelhor([Caminho1/N1 | Caminhos], MelhorCaminho).
+calculaMelhor([_| Caminho], MelhorCaminho) :-
+        calculaMelhor(Caminho, MelhorCaminho).
+
+
+calculaNumeroEnc([] , []).
+calculaNumeroEnc([Cam| XS ] , [Cam/Encomendas | Res]) :- calculaNumeroEncAux(Cam,Encomendas), calculaNumeroEnc(XS,Res).
+
+
+calculaNumeroEncAux([] , 0).
+calculaNumeroEncAux([Rua | Ruas], Res) :- findall(Id , encomendaNE(Id,_,_,Rua,_,_,_,_) , L), 
+                                          length(L,N), 
+                                          calculaNumeroEncAux(Ruas,Temp),
+                                          Res is Temp+N.
+
+
+
+calculaPesos([] , []).
+calculaPesos([Cam| XS ] , [Cam/PesoTotal | Res]) :- calculaPesoEncAux(Cam,PesoTotal), calculaPesos(XS,Res).
+
+calculaPesoEncAux([] , 0).
+calculaPesoEncAux([Rua | Ruas], Res) :- findall(Peso , encomendaNE(_,Peso,_,Rua,_,_,_,_) , L), 
+                                        sumlist(L,N),
+                                        calculaPesoEncAux(Ruas,Temp),
+                                        Res is Temp+N.
+
+calculaVolumes([] , []).
+calculaVolumes([Cam| XS ] , [Cam/VolumeTotal | Res]) :- calculaVolumeEncAux(Cam,VolumeTotal), calculaVolumes(XS,Res).
+
+calculaVolumeEncAux([] , 0).
+calculaVolumeEncAux([Rua | Ruas], Res) :- findall(Volume , encomendaNE(_,_,Volume,Rua,_,_,_,_) , L), 
+                                        sumlist(L,N),
+                                        calculaVolumeEncAux(Ruas,Temp),
+                                        Res is Temp+N.
+
+
+%--------------------------------------------- escolha do veículo  ------------------------------------------------
+
+
+escolheVeiculo(Prazo, Peso, CDistancia, CustoTempo, VeiculoSolucao):-
+    findall((CTempo, Veiculo), (custoFinalDec(Veiculo, Peso, CDistancia, CTempo), suportaPeso(Veiculo, Peso), entregaDentroPrazo(Prazo, CTempo)), Solucoes),
+    comparaSolucoes(Solucoes, (CustoTempo, VeiculoSolucao)).
+
+
+entregaDentroPrazo( Prazo, CTempo) :- get_date_time_value(year, Year),
+                                      get_date_time_value(month, Month),
+                                      get_date_time_value(day, Day),
+                                      get_date_time_value(hour, Hour),
+                                      NewHour is Hour + CTempo,
+                                      antes(NewHour/Day/Month/Year, Prazo).
+
+
+antes(H1/D1/M1/A1, HI/DI/MI/AI) :- A1<AI , !;
+                                   A1=:=AI ,  M1<MI, !;
+                                   A1=:=AI ,  M1=:=MI , D1<DI, !;
+                                   A1=:=AI ,  M1=:=MI , D1=:=DI, H1<HI.
+
+
+
+comparaSolucoes([Solucao], Solucao).
+comparaSolucoes([(Tempo1, Veiculo1), (Tempo2, Veiculo2) | Solucoes], Solucao) :-
+    Tempo1 =< Tempo2, !,
+    comparaSolucoes([(Tempo1, Veiculo1) | Solucoes], Solucao).
+comparaSolucoes([(Tempo, Veiculo)| Solucoes], Solucao) :-
+    comparaSolucoes(Solucoes, Solucao).
+
+
+
+suportaPeso( bicicleta, Peso ) :- Peso =< 5.
+suportaPeso( mota, Peso ) :- Peso =< 20.
+suportaPeso( carro, Peso) :- Peso =< 100.
+
+
+
+custoFinalDec(bicicleta, Peso, CustoDist, CustoTempo) :-
+    velocidadeMedia(bicicleta,X),
+    CustoTempo is CustoDist/(X-(0.7*Peso)).
+    
+custoFinalDec(mota, Peso, CustoDist, CustoTempo) :-
+    velocidadeMedia(mota,X),
+    CustoTempo is CustoDist/(X-(0.5*Peso)).
+    
+custoFinalDec(carro, Peso, CustoDist, CustoTempo) :-
+    velocidadeMedia(carro,X),
+    CustoTempo is CustoDist/(X-(0.1*Peso)).
+
+
+%---------------------------------- Encontra o melhor Caminho com a BreathFirst--------------------------------------
 
 encontraMelhorBF(Grafo, Id, NodoFinal, Veiculo, MelhorCusto, MelhorCaminho) :-
     statistics(walltime, [TimeSinceStart | [TimeSinceLastCall]]),
-    findall(Solucao/CTempo, bfTempo(Grafo, Id, NodoFinal, Veiculo, Solucao, CTempo, CDistancia), Solucoes),
+    findall(Solucao/CTempo, bfTempo(Grafo, Id, NodoFinal, Solucao, CTempo, CDistancia, Veiculo), Solucoes),
     encontraMelhor(Solucoes, MelhorCaminho/MelhorCusto),
     statistics(walltime, [NewTimeSinceStart | [ExecutionTime]]),
     write('Execution took '), write(ExecutionTime), write(' ms.'), nl.
-    
+
 
 
 
 encontraMelhor([Cam/Tempo], Cam/Tempo).
-encontraMelhor( [Cam1/Tempo1, Cam2/Tempo2 |Cams], Cam/Tempo ):- 
+encontraMelhor([Cam1/Tempo1, Cam2/Tempo2 |Cams], Cam/Tempo):- 
             Tempo1<Tempo2, !,
-            encontraMelhor([Cam1/Tempo1|Cams] , Cam/Tempo ).
-encontraMelhor([Cam1/Tempo1, Cam2/Tempo2 | Cams], Cam/Tempo ):- 
-            encontraMelhor([ Cam2/Tempo2 | Cams], Cam/Tempo).
-
-
-%-------------------------------------------- circuito mais rapido ------------------------------------------------
-
+            encontraMelhor([Cam1/Tempo1|Cams], Cam/Tempo).
+encontraMelhor([Cam1/Tempo1, Cam2/Tempo2 | Cams], Cam/Tempo):- 
+            encontraMelhor([Cam2/Tempo2 | Cams], Cam/Tempo).
 
 
 %------------------------------------------- predicados auxiliares ------------------------------------------------
@@ -462,12 +575,12 @@ encontraMelhor([Cam1/Tempo1, Cam2/Tempo2 | Cams], Cam/Tempo ):-
 
 
 
-expande([NodoAtual|Cam]/Custo/Estimativa, NodoFinal, Grafo, ExpandeCaminhos) :- findall([NovoNodo, NodoAtual | Cam]/NovoCusto/NovaEstimativa,
-                                                                                        (adjacente(NodoAtual, NovoNodo, CustoAresta, Grafo), 
-                                                                                        \+member(NovoNodo,Cam), 
-                                                                                        NovoCusto is CustoAresta + Custo, 
-                                                                                        distancia(NovoNodo, NodoFinal, NovaEstimativa)), 
-                                                                                        ExpandeCaminhos).
+expande(Grafo, [NodoAtual|Cam]/Custo/Estimativa, NodoFinal, ExpandeCaminhos) :- findall([NovoNodo, NodoAtual | Cam]/NovoCusto/NovaEstimativa,
+                                                                                (adjacente( Grafo, NodoAtual, NovoNodo, CustoAresta), 
+                                                                                \+member(NovoNodo,Cam), 
+                                                                                NovoCusto is CustoAresta + Custo, 
+                                                                                distancia(NovoNodo, NodoFinal, NovaEstimativa)), 
+                                                                                ExpandeCaminhos).
 
 
 inverso(Xs, Ys):-
